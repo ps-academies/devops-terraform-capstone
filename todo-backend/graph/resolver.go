@@ -7,5 +7,13 @@ import "todo-backend/graph/model"
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	todos []*model.Todo
+	todos *model.TodoConnection
+}
+
+func NewResolver() *Resolver {
+	return &Resolver{
+		todos: &model.TodoConnection{
+			Edges: []*model.TodoEdge{},
+		},
+	}
 }
