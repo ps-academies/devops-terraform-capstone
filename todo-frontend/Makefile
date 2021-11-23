@@ -7,16 +7,16 @@ LOG := @sh -c '\
 	   printf ${NC}' VALUE
 
 lint:
-	$(LOG) "Linting..."	
+	$(LOG) "Linting..."
 	@yarn lint
 
 
 test:
-	$(LOG) "Testing..."	
-	@yarn test
+	$(LOG) "Testing..."
+	@yarn test --ci --collect-coverage --verbose
 
 
 build:
-	$(LOG) "Building..."	
+	$(LOG) "Building..."
 	@yarn build
 
