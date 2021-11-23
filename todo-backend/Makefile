@@ -9,3 +9,15 @@ LOG := @sh -c '\
 generate:
 	$(LOG) "Regenerating from schema..."	
 	@go run github.com/99designs/gqlgen generate
+
+test: test-acceptance test-unit
+
+test-unit:
+	$(LOG) "Running unit tests"	
+	@go test -v ./...
+
+
+test-acceptance:
+	$(LOG) "Running acceptance tests"	
+	@go test -v -race -tags=acceptance ./testing/acceptance/...
+

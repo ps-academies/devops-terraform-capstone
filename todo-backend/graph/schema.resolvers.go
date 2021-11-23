@@ -8,10 +8,18 @@ import (
 	"fmt"
 	"todo-backend/graph/generated"
 	"todo-backend/graph/model"
+
+	"github.com/google/uuid"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented"))
+	next := &model.Todo{
+		ID:    uuid.New().String(),
+		Title: input.Title,
+	}
+	r.todos = append(r.todos, next)
+
+	return next, nil
 }
 
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
