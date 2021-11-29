@@ -1,0 +1,8 @@
+type VisibilityFilter {
+  id: String!
+  displayName: String!
+}
+
+extend type Query {
+  visibilityFilter: VisibilityFilter!
+}
