@@ -1,30 +1,31 @@
 module.exports = {
-  parser: '@typescript-eslint/parser',
+  parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 2018,
-    sourceType: 'module',
+    sourceType: "module",
     ecmaFeatures: {
       jsx: true,
     },
   },
-  plugins: ['@typescript-eslint', 'react', 'jsx-a11y'],
+  plugins: ["@typescript-eslint", "react", "jsx-a11y"],
   env: {
     browser: true,
     node: true,
   },
+  ignorePatterns: ["**/generated/*.*"],
   extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:jsx-a11y/recommended',
-    'prettier',
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:jsx-a11y/recommended",
+    "prettier",
   ],
   settings: {
     react: {
-      version: 'detect',
+      version: "detect",
     },
   },
   rules: {
-    'react/prop-types': 'off',
+    "react/prop-types": "off",
   },
 };
