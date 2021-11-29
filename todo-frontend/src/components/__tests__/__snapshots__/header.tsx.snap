@@ -1,7 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Header renders correctly 1`] = `
-<div>
-  hello world
-</div>
+<header
+  className="header"
+>
+  <h1>
+    todos
+  </h1>
+  <input
+    className="new-todo"
+    placeholder="What needs to be done?"
+  />
+</header>
 `;
