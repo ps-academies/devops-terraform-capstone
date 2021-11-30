@@ -48,6 +48,7 @@ export const FooterVisibiltyFilters: React.FC<FooterVisibiltyFiltersProps> = ({
       (o) => o.id === nextId
     );
 
+    if (!next) return;
     setVisibilityFilter(next);
   };
 

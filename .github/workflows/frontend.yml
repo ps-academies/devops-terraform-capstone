@@ -13,7 +13,9 @@ jobs:
       - name: Install Dependencies
         run: yarn install
         working-directory: todo-frontend
-      - run: make lint
+      - run: yarn lint
+        working-directory: todo-frontend
+      - run: yarn type-check
         working-directory: todo-frontend
 
   test:
@@ -26,5 +28,5 @@ jobs:
       - name: Install Dependencies
         run: yarn install
         working-directory: todo-frontend
-      - run: make test
+      - run: yarn test --ci --collect-coverage --verbose
         working-directory: todo-frontend

@@ -8,6 +8,8 @@ import {
 import {
   useGetTodosQuery,
   useGetVisibilityFilterQuery,
+  TodoEdge,
+  VisibilityFilter,
   VisibilityFilterOptions,
 } from "../state";
 
@@ -22,10 +24,8 @@ import { Main } from "../components/Main";
 import { TodoList, TodoListItem } from "../components/TodoList";
 
 const IndexRoute: React.FC = () => {
-  const { data: todosConnection } = useGetTodosQuery();
-  const {
-    data: { visibilityFilter: activeFilter },
-  } = useGetVisibilityFilterQuery();
+  const { data: todosData } = useGetTodosQuery();
+  const { data: visibilityFilterData } = useGetVisibilityFilterQuery();
 
   const [createTodo] = useCreateTodo();
   const [updateTodo] = useUpdateTodo();
@@ -33,16 +33,24 @@ const IndexRoute: React.FC = () => {
   const [setVisibilityFilter] = useSetVisibiltyFilter();
 
   const [completed, active] = useMemo(() => {
-    const { edges } = todosConnection.todos;
-    return edges.reduce(
+    const edges = todosData?.todos?.edges || [];
+
+    return edges.reduce<[TodoEdge[], TodoEdge[]]>(
       ([a, b], edge) => {
         return edge.node.completed ? [[...a, edge], b] : [a, [...b, edge]];
       },
       [[], []]
     );
-  }, [todosConnection]);
+  }, [todosData]);
 
-  const filtered = useMemo(() => {
+  const activeFilter = useMemo<VisibilityFilter>(() => {
+    return (
+      visibilityFilterData?.visibilityFilter ||
+      VisibilityFilterOptions["SHOW_ALL"]
+    );
+  }, [visibilityFilterData]);
+
+  const filtered = useMemo<TodoEdge[]>(() => {
     if (activeFilter.id === VisibilityFilterOptions["SHOW_ACTIVE"].id) {
       return active;
     }
@@ -51,7 +59,7 @@ const IndexRoute: React.FC = () => {
       return completed;
     }
 
-    return todosConnection.todos.edges;
+    return todosData?.todos?.edges || [];
   }, [activeFilter, completed, active]);
 
   const hasSelectedItems = filtered.length > 0;
