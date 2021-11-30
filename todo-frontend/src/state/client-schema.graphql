@@ -6,3 +6,7 @@ type VisibilityFilter {
 extend type Query {
   visibilityFilter: VisibilityFilter!
 }
+
+extend type Todo {
+  completed: Boolean!
+}

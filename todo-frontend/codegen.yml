@@ -1,6 +1,5 @@
 documents:
-  - src/operations/mutations.ts
-  - src/operations/queries.ts
+  - src/operations/**/*.ts
 
 overwrite: true
 

@@ -1,2 +1,4 @@
-export * as Mutations from "./mutations";
-export * as Queries from "./queries";
+export * from "./queries/get-todos";
+
+export * from "./mutations/create-todo";
+export * from "./mutations/update-todo";

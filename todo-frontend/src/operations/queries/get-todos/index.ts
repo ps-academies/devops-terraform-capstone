@@ -8,6 +8,7 @@ export const GET_TODOS = gql`
         node {
           id
           title
+          completed
         }
       }
       pageInfo {

@@ -16,6 +16,7 @@ export const cache: InMemoryCache = new InMemoryCache({
 });
 
 const initialTodos: Todo[] = [...Array(4)].map((_, index) => ({
+  completed: index % 2 === 0,
   id: uuid(),
   title: `todo ${index + 1}`,
 }));

@@ -1,5 +1,6 @@
 import React from "react";
 
+import { useUpdateTodo } from "../operations";
 import { useGetTodosQuery } from "../state";
 
 import { Header } from "../components/Header";
@@ -8,6 +9,7 @@ import { TodoList, TodoListItem } from "../components/TodoList";
 
 const IndexRoute: React.FC = () => {
   const { data } = useGetTodosQuery();
+  const [updateTodo] = useUpdateTodo();
 
   const hasTodos = data?.todos.edges && data?.todos.edges.length > 0;
 
@@ -23,7 +25,7 @@ const IndexRoute: React.FC = () => {
 
             <TodoList>
               {data.todos?.edges.map(({ node }) => (
-                <TodoListItem key={node.id} todo={node} />
+                <TodoListItem key={node.id} todo={node} onUpdate={updateTodo} />
               ))}
             </TodoList>
           </Main>

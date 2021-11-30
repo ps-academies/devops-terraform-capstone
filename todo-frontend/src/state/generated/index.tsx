@@ -31,7 +31,7 @@ export type MutationCreateTodoArgs = {
 
 export type MutationUpdateTodoArgs = {
   id: Scalars['ID'];
-  input: NewTodo;
+  input: UpdatedTodo;
 };
 
 export type NewTodo = {
@@ -65,6 +65,7 @@ export type QueryTodosArgs = {
 
 export type Todo = {
   __typename?: 'Todo';
+  completed: Scalars['Boolean'];
   id: Scalars['ID'];
   title: Scalars['String'];
 };
@@ -80,6 +81,10 @@ export type TodoEdge = {
   __typename?: 'TodoEdge';
   cursor: Scalars['ID'];
   node: Todo;
+};
+
+export type UpdatedTodo = {
+  title: Scalars['String'];
 };
 
 export type VisibilityFilter = {
@@ -98,7 +103,15 @@ export type CreateTodoMutation = { __typename?: 'Mutation', createTodo: { __type
 export type GetTodosQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTodosQuery = { __typename?: 'Query', todos: { __typename?: 'TodoConnection', edges: Array<{ __typename?: 'TodoEdge', cursor: string, node: { __typename?: 'Todo', id: string, title: string } }>, pageInfo: { __typename?: 'PageInfo', endCursor: string, hasNextPage?: boolean | null | undefined, startCursor: string } } };
+export type GetTodosQuery = { __typename?: 'Query', todos: { __typename?: 'TodoConnection', edges: Array<{ __typename?: 'TodoEdge', cursor: string, node: { __typename?: 'Todo', id: string, title: string, completed: boolean } }>, pageInfo: { __typename?: 'PageInfo', endCursor: string, hasNextPage?: boolean | null | undefined, startCursor: string } } };
+
+export type UpdateTodoMutationVariables = Exact<{
+  id: Scalars['ID'];
+  input: UpdatedTodo;
+}>;
+
+
+export type UpdateTodoMutation = { __typename?: 'Mutation', updateTodo: { __typename?: 'Todo', id: string, title: string, completed: boolean } };
 
 
 export const CreateTodoDocument = gql`
@@ -143,6 +156,7 @@ export const GetTodosDocument = gql`
       node {
         id
         title
+        completed
       }
     }
     pageInfo {
@@ -180,6 +194,42 @@ export function useGetTodosLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetTodosQueryHookResult = ReturnType<typeof useGetTodosQuery>;
 export type GetTodosLazyQueryHookResult = ReturnType<typeof useGetTodosLazyQuery>;
 export type GetTodosQueryResult = Apollo.QueryResult<GetTodosQuery, GetTodosQueryVariables>;
+export const UpdateTodoDocument = gql`
+    mutation UpdateTodo($id: ID!, $input: UpdatedTodo!) {
+  updateTodo(id: $id, input: $input) {
+    id
+    title
+    completed
+  }
+}
+    `;
+export type UpdateTodoMutationFn = Apollo.MutationFunction<UpdateTodoMutation, UpdateTodoMutationVariables>;
+
+/**
+ * __useUpdateTodoMutation__
+ *
+ * To run a mutation, you first call `useUpdateTodoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTodoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTodoMutation, { data, loading, error }] = useUpdateTodoMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateTodoMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTodoMutation, UpdateTodoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTodoMutation, UpdateTodoMutationVariables>(UpdateTodoDocument, options);
+      }
+export type UpdateTodoMutationHookResult = ReturnType<typeof useUpdateTodoMutation>;
+export type UpdateTodoMutationResult = Apollo.MutationResult<UpdateTodoMutation>;
+export type UpdateTodoMutationOptions = Apollo.BaseMutationOptions<UpdateTodoMutation, UpdateTodoMutationVariables>;
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
 
@@ -261,6 +311,7 @@ export type ResolversTypes = ResolversObject<{
   Todo: ResolverTypeWrapper<Todo>;
   TodoConnection: ResolverTypeWrapper<TodoConnection>;
   TodoEdge: ResolverTypeWrapper<TodoEdge>;
+  UpdatedTodo: UpdatedTodo;
   VisibilityFilter: ResolverTypeWrapper<VisibilityFilter>;
 }>;
 
@@ -277,6 +328,7 @@ export type ResolversParentTypes = ResolversObject<{
   Todo: Todo;
   TodoConnection: TodoConnection;
   TodoEdge: TodoEdge;
+  UpdatedTodo: UpdatedTodo;
   VisibilityFilter: VisibilityFilter;
 }>;
 
@@ -299,6 +351,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type TodoResolvers<ContextType = any, ParentType extends ResolversParentTypes['Todo'] = ResolversParentTypes['Todo']> = ResolversObject<{
+  completed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
