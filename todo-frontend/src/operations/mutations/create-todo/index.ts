@@ -1,5 +1,8 @@
 import { useCallback } from "react";
 import gql from "graphql-tag";
+import { v4 as uuid } from "uuid";
+
+import { NewTodo, TodoEdge, todosVar } from "../../../state";
 
 export const CREATE_TODO = gql`
   mutation CreateTodo($title: String!) {
@@ -11,8 +14,16 @@ export const CREATE_TODO = gql`
 `;
 
 const useCreateTodoLocal = () => {
-  const createTodo = useCallback(() => {
-    //
+  const createTodo = useCallback<(input: NewTodo) => void>((input) => {
+    const prev = todosVar();
+
+    const id = uuid();
+    const next: TodoEdge = {
+      cursor: id,
+      node: { ...input, id, completed: false },
+    };
+
+    todosVar({ ...prev, edges: prev.edges.concat(next) });
   }, []);
 
   return [createTodo];

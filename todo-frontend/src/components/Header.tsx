@@ -1,9 +1,48 @@
-import React from "react";
+import React, {
+  ChangeEventHandler,
+  KeyboardEventHandler,
+  useState,
+} from "react";
 
-export const Header: React.FC = () => (
-  <header className="header">
-    <h1>todos</h1>
+import { NewTodo } from "../state";
 
-    <input className="new-todo" placeholder="What needs to be done?" />
-  </header>
+export const Header: React.FC = (props) => (
+  <header className="header" {...props} />
 );
+
+export const HeaderTitle: React.FC = () => <h1>todos</h1>;
+
+interface HeaderNewTodoInputProps {
+  createTodo: (input: NewTodo) => void;
+}
+
+export const HeaderNewTodoInput: React.FC<HeaderNewTodoInputProps> = ({
+  createTodo,
+  ...rest
+}) => {
+  const [value, setValue] = useState<string>("");
+
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (evt) => {
+    setValue(evt.target.value);
+  };
+
+  const save: KeyboardEventHandler<HTMLInputElement> = (evt) => {
+    if (evt.key !== "Enter") return;
+    if (!(evt.target instanceof HTMLInputElement)) return;
+    const title = evt.target.value.trim();
+    const input = { title };
+
+    createTodo(input);
+    setValue("");
+  };
+  return (
+    <input
+      {...rest}
+      className="new-todo"
+      onChange={handleChange}
+      onKeyDown={save}
+      placeholder="What needs to be done?"
+      value={value}
+    />
+  );
+};

@@ -1,13 +1,17 @@
 import React, { useMemo } from "react";
 
-import { useSetVisibiltyFilter, useUpdateTodo } from "../operations";
+import {
+  useCreateTodo,
+  useSetVisibiltyFilter,
+  useUpdateTodo,
+} from "../operations";
 import {
   useGetTodosQuery,
   useGetVisibilityFilterQuery,
   VisibilityFilterOptions,
 } from "../state";
 
-import { Header } from "../components/Header";
+import { Header, HeaderTitle, HeaderNewTodoInput } from "../components/Header";
 import {
   Footer,
   FooterClearCompletedButton,
@@ -23,8 +27,10 @@ const IndexRoute: React.FC = () => {
     data: { visibilityFilter: activeFilter },
   } = useGetVisibilityFilterQuery();
 
-  const [setVisibilityFilter] = useSetVisibiltyFilter();
+  const [createTodo] = useCreateTodo();
   const [updateTodo] = useUpdateTodo();
+
+  const [setVisibilityFilter] = useSetVisibiltyFilter();
 
   const [completed, active] = useMemo(() => {
     const { edges } = todosConnection.todos;
@@ -53,7 +59,10 @@ const IndexRoute: React.FC = () => {
   return (
     <>
       <div className="todoapp">
-        <Header />
+        <Header>
+          <HeaderTitle />
+          <HeaderNewTodoInput createTodo={createTodo} />
+        </Header>
 
         {hasSelectedItems && (
           <Main>
@@ -88,9 +97,6 @@ const IndexRoute: React.FC = () => {
         <p>Double-click to edit a todo</p>
         <p>
           Template by <a href="http://sindresorhus.com">Sindre Sorhus</a>
-        </p>
-        <p>
-          Created by <a href="http://todomvc.com">you</a>
         </p>
         <p>
           Part of <a href="http://todomvc.com">TodoMVC</a>
