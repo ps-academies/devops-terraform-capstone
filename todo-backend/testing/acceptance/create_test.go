@@ -4,6 +4,7 @@
 package acceptance
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"todo-backend/graph"
 	"todo-backend/graph/generated"
@@ -22,14 +23,10 @@ func TestCreateTodo(t *testing.T) {
 	c.MustPost(createTodoTemplate, &resp, client.Var("title", title))
 
 	t.Run("Correct title should be returned", func(t *testing.T) {
-		if actual := resp.CreateTodo.Title; actual != title {
-			t.Errorf("expected: '%s' | actual: '%s'", title, actual)
-		}
+		assert.Equal(t, resp.CreateTodo.Title, title)
 	})
 
 	t.Run("ID should not be empty", func(t *testing.T) {
-		if resp.CreateTodo.ID == "" {
-			t.Error("expected ID but it was empty")
-		}
+		assert.NotEmpty(t, resp.CreateTodo.ID, "expected a non-empty ID")
 	})
 }

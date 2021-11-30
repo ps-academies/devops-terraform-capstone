@@ -5,13 +5,13 @@ package acceptance
 
 import (
 	"fmt"
+	"github.com/99designs/gqlgen/client"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
 	"todo-backend/graph"
 	"todo-backend/graph/generated"
-
-	"github.com/99designs/gqlgen/client"
-	"github.com/99designs/gqlgen/graphql/handler"
 )
 
 func TestGetMany(t *testing.T) {
@@ -35,5 +35,13 @@ func TestGetMany(t *testing.T) {
 		if actual := len(resp.Todos.Edges); actual != expectedCount {
 			t.Errorf("expected: '%d' | actual: '%d'", expectedCount, actual)
 		}
+	})
+
+	t.Run("correct titles should be returned", func(t *testing.T) {
+		var actual []string
+		for _, edge := range resp.Todos.Edges {
+			actual = append(actual, edge.Node.Title)
+		}
+		assert.ElementsMatch(t, titles, actual)
 	})
 }
