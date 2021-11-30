@@ -11,6 +11,7 @@ type PageInfo {
 type Todo {
     id: ID!
     title: String!
+    complete: Boolean!
 }
 
 type TodoConnection {

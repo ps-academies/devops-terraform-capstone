@@ -13,8 +13,9 @@ type PageInfo struct {
 }
 
 type Todo struct {
-	ID    string `json:"id"`
-	Title string `json:"title"`
+	ID       string `json:"id"`
+	Title    string `json:"title"`
+	Complete bool   `json:"complete"`
 }
 
 type TodoConnection struct {

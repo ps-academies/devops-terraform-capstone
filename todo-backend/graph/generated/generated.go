@@ -59,8 +59,9 @@ type ComplexityRoot struct {
 	}
 
 	Todo struct {
-		ID    func(childComplexity int) int
-		Title func(childComplexity int) int
+		Complete func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Title    func(childComplexity int) int
 	}
 
 	TodoConnection struct {
@@ -167,6 +168,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Todos(childComplexity, args["first"].(*int), args["after"].(*string)), true
+
+	case "Todo.complete":
+		if e.complexity.Todo.Complete == nil {
+			break
+		}
+
+		return e.complexity.Todo.Complete(childComplexity), true
 
 	case "Todo.id":
 		if e.complexity.Todo.ID == nil {
@@ -294,6 +302,7 @@ type PageInfo {
 type Todo {
     id: ID!
     title: String!
+    complete: Boolean!
 }
 
 type TodoConnection {
@@ -862,6 +871,41 @@ func (ec *executionContext) _Todo_title(ctx context.Context, field graphql.Colle
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Todo_complete(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Todo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Complete, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _TodoConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.TodoConnection) (ret graphql.Marshaler) {
@@ -2326,6 +2370,11 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "title":
 			out.Values[i] = ec._Todo_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "complete":
+			out.Values[i] = ec._Todo_complete(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
