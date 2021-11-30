@@ -1,7 +1,7 @@
 import { InMemoryCache, ReactiveVar, makeVar } from "@apollo/client";
 import { v4 as uuid } from "uuid";
 
-import { Todo, TodoConnection } from "./generated";
+import { Todo, TodoConnection, VisibilityFilter } from "./generated";
 
 export const cache: InMemoryCache = new InMemoryCache({
   typePolicies: {
@@ -9,6 +9,9 @@ export const cache: InMemoryCache = new InMemoryCache({
       fields: {
         todos: {
           read: () => todosVar(),
+        },
+        visibilityFilter: {
+          read: () => visibilityFilterVar(),
         },
       },
     },
@@ -30,3 +33,22 @@ export const todosVar: ReactiveVar<TodoConnection> = makeVar<TodoConnection>({
   },
   totalCount: initialTodos.length,
 });
+
+export const VisibilityFilterOptions: { [filter: string]: VisibilityFilter } = {
+  SHOW_ALL: {
+    id: "show_all",
+    displayName: "All",
+  },
+  SHOW_COMPLETED: {
+    id: "show_completed",
+    displayName: "Completed",
+  },
+  SHOW_ACTIVE: {
+    id: "show_active",
+    displayName: "Active",
+  },
+};
+
+export const visibilityFilterVar = makeVar<VisibilityFilter>(
+  VisibilityFilterOptions.SHOW_ALL
+);

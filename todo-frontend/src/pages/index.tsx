@@ -1,58 +1,87 @@
-import React from "react";
+import React, { useMemo } from "react";
 
-import { useUpdateTodo } from "../operations";
-import { useGetTodosQuery } from "../state";
+import { useSetVisibiltyFilter, useUpdateTodo } from "../operations";
+import {
+  useGetTodosQuery,
+  useGetVisibilityFilterQuery,
+  VisibilityFilterOptions,
+} from "../state";
 
 import { Header } from "../components/Header";
+import {
+  Footer,
+  FooterClearCompletedButton,
+  FooterActiveCount,
+  FooterVisibiltyFilters,
+} from "../components/Footer";
 import { Main } from "../components/Main";
 import { TodoList, TodoListItem } from "../components/TodoList";
 
 const IndexRoute: React.FC = () => {
-  const { data } = useGetTodosQuery();
+  const { data: todosConnection } = useGetTodosQuery();
+  const {
+    data: { visibilityFilter: activeFilter },
+  } = useGetVisibilityFilterQuery();
+
+  const [setVisibilityFilter] = useSetVisibiltyFilter();
   const [updateTodo] = useUpdateTodo();
 
-  const hasTodos = data?.todos.edges && data?.todos.edges.length > 0;
+  const [completed, active] = useMemo(() => {
+    const { edges } = todosConnection.todos;
+    return edges.reduce(
+      ([a, b], edge) => {
+        return edge.node.completed ? [[...a, edge], b] : [a, [...b, edge]];
+      },
+      [[], []]
+    );
+  }, [todosConnection]);
+
+  const filtered = useMemo(() => {
+    if (activeFilter.id === VisibilityFilterOptions["SHOW_ACTIVE"].id) {
+      return active;
+    }
+
+    if (activeFilter.id === VisibilityFilterOptions["SHOW_COMPLETED"].id) {
+      return completed;
+    }
+
+    return todosConnection.todos.edges;
+  }, [activeFilter, completed, active]);
+
+  const hasSelectedItems = filtered.length > 0;
 
   return (
     <>
       <div className="todoapp">
         <Header />
 
-        {hasTodos && (
+        {hasSelectedItems && (
           <Main>
-            <input id="toggle-all" className="toggle-all" type="checkbox" />
-            <label htmlFor="toggle-all">Mark all as complete</label>
+            {completed.length > 0 && (
+              <>
+                <input id="toggle-all" className="toggle-all" type="checkbox" />
+                <label htmlFor="toggle-all">Mark all as complete</label>
+              </>
+            )}
 
             <TodoList>
-              {data.todos?.edges.map(({ node }) => (
+              {filtered.map(({ node }) => (
                 <TodoListItem key={node.id} todo={node} onUpdate={updateTodo} />
               ))}
             </TodoList>
           </Main>
         )}
 
-        {hasTodos && (
-          <footer className="footer">
-            <span className="todo-count">
-              <strong>0</strong> item left
-            </span>
+        <Footer>
+          {active.length > 0 && <FooterActiveCount count={active.length} />}
 
-            <ul className="filters">
-              <li>
-                <a className="selected" href="#/">
-                  All
-                </a>
-              </li>
-              <li>
-                <a href="#/active">Active</a>
-              </li>
-              <li>
-                <a href="#/completed">Completed</a>
-              </li>
-            </ul>
-            <button className="clear-completed">Clear completed</button>
-          </footer>
-        )}
+          <FooterVisibiltyFilters
+            activeFilter={activeFilter}
+            setVisibilityFilter={setVisibilityFilter}
+          />
+
+          {completed.length > 0 && <FooterClearCompletedButton />}
+        </Footer>
       </div>
 
       <footer className="info">

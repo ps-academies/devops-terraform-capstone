@@ -100,11 +100,6 @@ export type CreateTodoMutationVariables = Exact<{
 
 export type CreateTodoMutation = { __typename?: 'Mutation', createTodo: { __typename?: 'Todo', id: string, title: string } };
 
-export type GetTodosQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetTodosQuery = { __typename?: 'Query', todos: { __typename?: 'TodoConnection', edges: Array<{ __typename?: 'TodoEdge', cursor: string, node: { __typename?: 'Todo', id: string, title: string, completed: boolean } }>, pageInfo: { __typename?: 'PageInfo', endCursor: string, hasNextPage?: boolean | null | undefined, startCursor: string } } };
-
 export type UpdateTodoMutationVariables = Exact<{
   id: Scalars['ID'];
   input: UpdatedTodo;
@@ -112,6 +107,16 @@ export type UpdateTodoMutationVariables = Exact<{
 
 
 export type UpdateTodoMutation = { __typename?: 'Mutation', updateTodo: { __typename?: 'Todo', id: string, title: string, completed: boolean } };
+
+export type GetTodosQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTodosQuery = { __typename?: 'Query', todos: { __typename?: 'TodoConnection', edges: Array<{ __typename?: 'TodoEdge', cursor: string, node: { __typename?: 'Todo', id: string, title: string, completed: boolean } }>, pageInfo: { __typename?: 'PageInfo', endCursor: string, hasNextPage?: boolean | null | undefined, startCursor: string } } };
+
+export type GetVisibilityFilterQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetVisibilityFilterQuery = { __typename?: 'Query', visibilityFilter: { __typename?: 'VisibilityFilter', id: string, displayName: string } };
 
 
 export const CreateTodoDocument = gql`
@@ -148,6 +153,42 @@ export function useCreateTodoMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateTodoMutationHookResult = ReturnType<typeof useCreateTodoMutation>;
 export type CreateTodoMutationResult = Apollo.MutationResult<CreateTodoMutation>;
 export type CreateTodoMutationOptions = Apollo.BaseMutationOptions<CreateTodoMutation, CreateTodoMutationVariables>;
+export const UpdateTodoDocument = gql`
+    mutation UpdateTodo($id: ID!, $input: UpdatedTodo!) {
+  updateTodo(id: $id, input: $input) {
+    id
+    title
+    completed
+  }
+}
+    `;
+export type UpdateTodoMutationFn = Apollo.MutationFunction<UpdateTodoMutation, UpdateTodoMutationVariables>;
+
+/**
+ * __useUpdateTodoMutation__
+ *
+ * To run a mutation, you first call `useUpdateTodoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTodoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTodoMutation, { data, loading, error }] = useUpdateTodoMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateTodoMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTodoMutation, UpdateTodoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTodoMutation, UpdateTodoMutationVariables>(UpdateTodoDocument, options);
+      }
+export type UpdateTodoMutationHookResult = ReturnType<typeof useUpdateTodoMutation>;
+export type UpdateTodoMutationResult = Apollo.MutationResult<UpdateTodoMutation>;
+export type UpdateTodoMutationOptions = Apollo.BaseMutationOptions<UpdateTodoMutation, UpdateTodoMutationVariables>;
 export const GetTodosDocument = gql`
     query GetTodos {
   todos @client {
@@ -194,42 +235,41 @@ export function useGetTodosLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetTodosQueryHookResult = ReturnType<typeof useGetTodosQuery>;
 export type GetTodosLazyQueryHookResult = ReturnType<typeof useGetTodosLazyQuery>;
 export type GetTodosQueryResult = Apollo.QueryResult<GetTodosQuery, GetTodosQueryVariables>;
-export const UpdateTodoDocument = gql`
-    mutation UpdateTodo($id: ID!, $input: UpdatedTodo!) {
-  updateTodo(id: $id, input: $input) {
+export const GetVisibilityFilterDocument = gql`
+    query GetVisibilityFilter {
+  visibilityFilter @client {
     id
-    title
-    completed
+    displayName
   }
 }
     `;
-export type UpdateTodoMutationFn = Apollo.MutationFunction<UpdateTodoMutation, UpdateTodoMutationVariables>;
 
 /**
- * __useUpdateTodoMutation__
+ * __useGetVisibilityFilterQuery__
  *
- * To run a mutation, you first call `useUpdateTodoMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateTodoMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
+ * To run a query within a React component, call `useGetVisibilityFilterQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetVisibilityFilterQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const [updateTodoMutation, { data, loading, error }] = useUpdateTodoMutation({
+ * const { data, loading, error } = useGetVisibilityFilterQuery({
  *   variables: {
- *      id: // value for 'id'
- *      input: // value for 'input'
  *   },
  * });
  */
-export function useUpdateTodoMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTodoMutation, UpdateTodoMutationVariables>) {
+export function useGetVisibilityFilterQuery(baseOptions?: Apollo.QueryHookOptions<GetVisibilityFilterQuery, GetVisibilityFilterQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateTodoMutation, UpdateTodoMutationVariables>(UpdateTodoDocument, options);
+        return Apollo.useQuery<GetVisibilityFilterQuery, GetVisibilityFilterQueryVariables>(GetVisibilityFilterDocument, options);
       }
-export type UpdateTodoMutationHookResult = ReturnType<typeof useUpdateTodoMutation>;
-export type UpdateTodoMutationResult = Apollo.MutationResult<UpdateTodoMutation>;
-export type UpdateTodoMutationOptions = Apollo.BaseMutationOptions<UpdateTodoMutation, UpdateTodoMutationVariables>;
+export function useGetVisibilityFilterLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetVisibilityFilterQuery, GetVisibilityFilterQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetVisibilityFilterQuery, GetVisibilityFilterQueryVariables>(GetVisibilityFilterDocument, options);
+        }
+export type GetVisibilityFilterQueryHookResult = ReturnType<typeof useGetVisibilityFilterQuery>;
+export type GetVisibilityFilterLazyQueryHookResult = ReturnType<typeof useGetVisibilityFilterLazyQuery>;
+export type GetVisibilityFilterQueryResult = Apollo.QueryResult<GetVisibilityFilterQuery, GetVisibilityFilterQueryVariables>;
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
 
