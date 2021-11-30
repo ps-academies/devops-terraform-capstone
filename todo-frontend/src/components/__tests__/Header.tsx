@@ -1,11 +1,13 @@
 import React from "react";
-import renderer from "react-test-renderer";
+import { render, screen } from "@testing-library/react";
+
 import { Header } from "../Header";
 
 describe("Header", () => {
-  it("renders correctly", () => {
-    const tree = renderer.create(<Header>Hello World</Header>).toJSON();
+  it("should have a heading", () => {
+    render(<Header />);
+    const heading = screen.getByRole("heading", { level: 1 });
 
-    expect(tree).toMatchSnapshot();
+    expect(heading).toHaveTextContent("todos");
   });
 });
