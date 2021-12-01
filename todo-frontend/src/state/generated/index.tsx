@@ -45,8 +45,16 @@ export type PageInfo = {
   startCursor: Scalars['ID'];
 };
 
+export type Pagination = {
+  __typename?: 'Pagination';
+  currentPage: Scalars['Int'];
+  pageSize: Scalars['Int'];
+  pagesCount: Scalars['Int'];
+};
+
 export type Query = {
   __typename?: 'Query';
+  pagination: Pagination;
   todo?: Maybe<Todo>;
   todos: TodoConnection;
   visibilityFilter: VisibilityFilter;
@@ -107,6 +115,11 @@ export type UpdateTodoMutationVariables = Exact<{
 
 
 export type UpdateTodoMutation = { __typename?: 'Mutation', updateTodo: { __typename?: 'Todo', id: string, title: string, completed: boolean } };
+
+export type GetPaginationQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPaginationQuery = { __typename?: 'Query', pagination: { __typename?: 'Pagination', currentPage: number, pageSize: number, pagesCount: number } };
 
 export type GetTodosQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -189,6 +202,42 @@ export function useUpdateTodoMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateTodoMutationHookResult = ReturnType<typeof useUpdateTodoMutation>;
 export type UpdateTodoMutationResult = Apollo.MutationResult<UpdateTodoMutation>;
 export type UpdateTodoMutationOptions = Apollo.BaseMutationOptions<UpdateTodoMutation, UpdateTodoMutationVariables>;
+export const GetPaginationDocument = gql`
+    query GetPagination {
+  pagination @client {
+    currentPage
+    pageSize
+    pagesCount
+  }
+}
+    `;
+
+/**
+ * __useGetPaginationQuery__
+ *
+ * To run a query within a React component, call `useGetPaginationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPaginationQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPaginationQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPaginationQuery(baseOptions?: Apollo.QueryHookOptions<GetPaginationQuery, GetPaginationQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPaginationQuery, GetPaginationQueryVariables>(GetPaginationDocument, options);
+      }
+export function useGetPaginationLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPaginationQuery, GetPaginationQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPaginationQuery, GetPaginationQueryVariables>(GetPaginationDocument, options);
+        }
+export type GetPaginationQueryHookResult = ReturnType<typeof useGetPaginationQuery>;
+export type GetPaginationLazyQueryHookResult = ReturnType<typeof useGetPaginationLazyQuery>;
+export type GetPaginationQueryResult = Apollo.QueryResult<GetPaginationQuery, GetPaginationQueryVariables>;
 export const GetTodosDocument = gql`
     query GetTodos {
   todos @client {
@@ -346,6 +395,7 @@ export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<{}>;
   NewTodo: NewTodo;
   PageInfo: ResolverTypeWrapper<PageInfo>;
+  Pagination: ResolverTypeWrapper<Pagination>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Todo: ResolverTypeWrapper<Todo>;
@@ -363,6 +413,7 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
   NewTodo: NewTodo;
   PageInfo: PageInfo;
+  Pagination: Pagination;
   Query: {};
   String: Scalars['String'];
   Todo: Todo;
@@ -384,7 +435,15 @@ export type PageInfoResolvers<ContextType = any, ParentType extends ResolversPar
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PaginationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Pagination'] = ResolversParentTypes['Pagination']> = ResolversObject<{
+  currentPage?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  pageSize?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  pagesCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  pagination?: Resolver<ResolversTypes['Pagination'], ParentType, ContextType>;
   todo?: Resolver<Maybe<ResolversTypes['Todo']>, ParentType, ContextType, RequireFields<QueryTodoArgs, 'id'>>;
   todos?: Resolver<ResolversTypes['TodoConnection'], ParentType, ContextType, RequireFields<QueryTodosArgs, 'first'>>;
   visibilityFilter?: Resolver<ResolversTypes['VisibilityFilter'], ParentType, ContextType>;
@@ -419,6 +478,7 @@ export type VisibilityFilterResolvers<ContextType = any, ParentType extends Reso
 export type Resolvers<ContextType = any> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
+  Pagination?: PaginationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Todo?: TodoResolvers<ContextType>;
   TodoConnection?: TodoConnectionResolvers<ContextType>;

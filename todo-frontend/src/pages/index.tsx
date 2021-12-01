@@ -1,16 +1,18 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 
 import {
   useCreateTodo,
+  useSetPagination,
   useSetVisibiltyFilter,
   useUpdateTodo,
 } from "../operations";
 import {
-  useGetTodosQuery,
-  useGetVisibilityFilterQuery,
   TodoEdge,
   VisibilityFilter,
   VisibilityFilterOptions,
+  useGetPaginationQuery,
+  useGetTodosQuery,
+  useGetVisibilityFilterQuery,
 } from "../state";
 
 import { Header, HeaderTitle, HeaderNewTodoInput } from "../components/Header";
@@ -21,15 +23,18 @@ import {
   FooterVisibiltyFilters,
 } from "../components/Footer";
 import { Main } from "../components/Main";
+import { Pagination } from "../components/Pagination";
 import { TodoList, TodoListItem } from "../components/TodoList";
 
 const IndexRoute: React.FC = () => {
   const { data: todosData } = useGetTodosQuery();
-  const { data: visibilityFilterData } = useGetVisibilityFilterQuery();
-
   const [createTodo] = useCreateTodo();
   const [updateTodo] = useUpdateTodo();
 
+  const { data: paginationData } = useGetPaginationQuery();
+  const [setPagination] = useSetPagination();
+
+  const { data: visibilityFilterData } = useGetVisibilityFilterQuery();
   const [setVisibilityFilter] = useSetVisibiltyFilter();
 
   const [completed, active] = useMemo(() => {
@@ -64,6 +69,27 @@ const IndexRoute: React.FC = () => {
 
   const hasSelectedItems = filtered.length > 0;
 
+  useEffect(() => {
+    if (!paginationData) return;
+
+    const count = filtered.length;
+
+    setPagination({
+      ...paginationData.pagination,
+      pagesCount: Math.ceil(count / pageSize),
+    });
+  }, [filtered, paginationData]);
+
+  const { currentPage, pageSize, pagesCount } = paginationData!.pagination;
+
+  const setPage = useCallback<(nextPage: number) => void>((nextPage) => {
+    if (!paginationData) return;
+    setPagination({
+      ...paginationData.pagination,
+      currentPage: nextPage,
+    });
+  }, []);
+
   return (
     <>
       <div className="todoapp">
@@ -82,10 +108,24 @@ const IndexRoute: React.FC = () => {
             )}
 
             <TodoList>
-              {filtered.map(({ node }) => (
-                <TodoListItem key={node.id} todo={node} onUpdate={updateTodo} />
-              ))}
+              {filtered
+                .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+                .map(({ node }) => (
+                  <TodoListItem
+                    key={node.id}
+                    todo={node}
+                    onUpdate={updateTodo}
+                  />
+                ))}
             </TodoList>
+
+            {pagesCount > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                pagesCount={pagesCount}
+                setPage={setPage}
+              />
+            )}
           </Main>
         )}
 

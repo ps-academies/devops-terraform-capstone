@@ -1,7 +1,12 @@
 import { InMemoryCache, ReactiveVar, makeVar } from "@apollo/client";
 import { v4 as uuid } from "uuid";
 
-import { Todo, TodoConnection, VisibilityFilter } from "./generated";
+import {
+  Pagination,
+  Todo,
+  TodoConnection,
+  VisibilityFilter,
+} from "./generated";
 
 export const cache: InMemoryCache = new InMemoryCache({
   typePolicies: {
@@ -9,6 +14,9 @@ export const cache: InMemoryCache = new InMemoryCache({
       fields: {
         todos: {
           read: () => todosVar(),
+        },
+        pagination: {
+          read: () => paginationVar(),
         },
         visibilityFilter: {
           read: () => visibilityFilterVar(),
@@ -18,8 +26,14 @@ export const cache: InMemoryCache = new InMemoryCache({
   },
 });
 
-const initialTodos: Todo[] = [...Array(4)].map((_, index) => ({
-  completed: index % 2 === 0,
+export const paginationVar = makeVar<Pagination>({
+  currentPage: 1,
+  pageSize: 10,
+  pagesCount: 0,
+});
+
+const initialTodos: Todo[] = [...Array(50)].map((_, index) => ({
+  completed: (index + 1) % 3 === 0,
   id: uuid(),
   title: `todo ${index + 1}`,
 }));
