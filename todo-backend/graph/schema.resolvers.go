@@ -14,7 +14,7 @@ import (
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
 	next := &model.Todo{
-		ID:    uuid.New().String(),
+		ID:    uuid.NewString(),
 		Title: input.Title,
 	}
 	nextEdge := model.TodoEdge{Node: next}
