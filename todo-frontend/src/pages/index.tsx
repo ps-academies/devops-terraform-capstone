@@ -19,7 +19,6 @@ import {
 import { Header, HeaderTitle, HeaderNewTodoInput } from "../components/Header";
 import {
   Footer,
-  FooterClearCompletedButton,
   FooterActiveCount,
   FooterVisibiltyFilters,
 } from "../components/Footer";
@@ -107,12 +106,14 @@ const IndexRoute: React.FC = () => {
 
         {hasSelectedItems && (
           <Main>
+            {/*
             {completed.length > 0 && (
               <>
                 <input id="toggle-all" className="toggle-all" type="checkbox" />
                 <label htmlFor="toggle-all">Mark all as complete</label>
               </>
             )}
+            */}
 
             <TodoList>
               {filtered
@@ -145,7 +146,9 @@ const IndexRoute: React.FC = () => {
             setVisibilityFilter={setVisibilityFilter}
           />
 
+          {/*
           {completed.length > 0 && <FooterClearCompletedButton />}
+          */}
         </Footer>
       </div>
 
