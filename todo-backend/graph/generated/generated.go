@@ -59,9 +59,9 @@ type ComplexityRoot struct {
 	}
 
 	Todo struct {
-		Complete func(childComplexity int) int
-		ID       func(childComplexity int) int
-		Title    func(childComplexity int) int
+		Completed func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Title     func(childComplexity int) int
 	}
 
 	TodoConnection struct {
@@ -169,12 +169,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Todos(childComplexity, args["first"].(*int), args["after"].(*string)), true
 
-	case "Todo.complete":
-		if e.complexity.Todo.Complete == nil {
+	case "Todo.completed":
+		if e.complexity.Todo.Completed == nil {
 			break
 		}
 
-		return e.complexity.Todo.Complete(childComplexity), true
+		return e.complexity.Todo.Completed(childComplexity), true
 
 	case "Todo.id":
 		if e.complexity.Todo.ID == nil {
@@ -302,7 +302,7 @@ type PageInfo {
 type Todo {
     id: ID!
     title: String!
-    complete: Boolean!
+    completed: Boolean!
 }
 
 type TodoConnection {
@@ -873,7 +873,7 @@ func (ec *executionContext) _Todo_title(ctx context.Context, field graphql.Colle
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Todo_complete(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
+func (ec *executionContext) _Todo_completed(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -891,7 +891,7 @@ func (ec *executionContext) _Todo_complete(ctx context.Context, field graphql.Co
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Complete, nil
+		return obj.Completed, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2373,8 +2373,8 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "complete":
-			out.Values[i] = ec._Todo_complete(ctx, field, obj)
+		case "completed":
+			out.Values[i] = ec._Todo_completed(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
