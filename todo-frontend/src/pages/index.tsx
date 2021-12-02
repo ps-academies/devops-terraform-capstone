@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 
 import {
   useCreateTodo,
+  useDeleteTodo,
   useSetPagination,
   useSetVisibiltyFilter,
   useUpdateTodo,
@@ -29,6 +30,7 @@ import { TodoList, TodoListItem } from "../components/TodoList";
 const IndexRoute: React.FC = () => {
   const { data: todosData } = useGetTodosQuery();
   const [createTodo] = useCreateTodo();
+  const [deleteTodo] = useDeleteTodo();
   const [updateTodo] = useUpdateTodo();
 
   const { data: paginationData } = useGetPaginationQuery();
@@ -69,18 +71,23 @@ const IndexRoute: React.FC = () => {
 
   const hasSelectedItems = filtered.length > 0;
 
+  const { currentPage, pageSize, pagesCount } = paginationData!.pagination;
   useEffect(() => {
     if (!paginationData) return;
 
     const count = filtered.length;
+    const { currentPage: prevCurrentPage } = paginationData.pagination;
+
+    const nextPagesCount = Math.ceil(count / pageSize);
+    const danglingCurrentPage =
+      pagesCount > 0 && prevCurrentPage > nextPagesCount;
 
     setPagination({
       ...paginationData.pagination,
-      pagesCount: Math.ceil(count / pageSize),
+      pagesCount: nextPagesCount,
+      ...(danglingCurrentPage && { currentPage: nextPagesCount }),
     });
-  }, [filtered, paginationData]);
-
-  const { currentPage, pageSize, pagesCount } = paginationData!.pagination;
+  }, [filtered.length, paginationData]);
 
   const setPage = useCallback<(nextPage: number) => void>((nextPage) => {
     if (!paginationData) return;
@@ -114,6 +121,7 @@ const IndexRoute: React.FC = () => {
                   <TodoListItem
                     key={node.id}
                     todo={node}
+                    onDelete={deleteTodo}
                     onUpdate={updateTodo}
                   />
                 ))}

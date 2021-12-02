@@ -15,11 +15,12 @@ export const TodoList: React.FC = (props) => (
 
 interface TodoListItemProps {
   todo: Todo;
+  onDelete: (id: string) => void;
   onUpdate: (id: string, input: UpdatedTodo) => void;
 }
 
 export const TodoListItem: React.FC<TodoListItemProps> = (props) => {
-  const { children: _, onUpdate, todo, ...rest } = props;
+  const { children: _, onDelete, onUpdate, todo, ...rest } = props;
 
   const [editing, setEditing] = useState<boolean>(false);
 
@@ -43,8 +44,8 @@ export const TodoListItem: React.FC<TodoListItemProps> = (props) => {
 
   return (
     <li
-      className={cx({ completed: todo.completed, editing })}
       {...rest}
+      className={cx({ completed: todo.completed, editing })}
       onDoubleClick={handleDoubleClick}
     >
       {editing ? (
@@ -58,7 +59,7 @@ export const TodoListItem: React.FC<TodoListItemProps> = (props) => {
             onChange={handleToggle}
           />
           <label>{todo.title}</label>
-          <button className="destroy" />
+          <button className="destroy" onClick={() => onDelete(todo.id)} />
         </div>
       )}
     </li>
