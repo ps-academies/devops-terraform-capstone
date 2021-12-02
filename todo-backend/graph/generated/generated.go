@@ -8,6 +8,7 @@ import (
 	"errors"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"todo-backend/graph/model"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -308,35 +309,35 @@ var sources = []*ast.Source{
 # https://gqlgen.com/getting-started/
 
 type PageInfo {
-    startCursor: ID!
-    endCursor: ID!
-    hasNextPage: Boolean
+  startCursor: ID!
+  endCursor: ID!
+  hasNextPage: Boolean
 }
 
 type Todo {
-    id: ID!
-    title: String!
-    completed: Boolean!
+  id: ID!
+  title: String!
+  completed: Boolean!
 }
 
 type TodoConnection {
-    edges: [TodoEdge!]!
-    pageInfo: PageInfo!
-    totalCount: Int
+  edges: [TodoEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int
 }
 
 type TodoEdge {
-    cursor: ID!
-    node: Todo
+  cursor: ID!
+  node: Todo!
 }
 
 type Query {
-    todo(id: ID!): Todo
-    todos(first: Int = 20, after: ID): TodoConnection
+  todo(id: ID!): Todo
+  todos(first: Int = 20, after: ID): TodoConnection!
 }
 
 input NewTodo {
-    title: String!
+  title: String!
 }
 
 input UpdateTodo {
@@ -345,9 +346,9 @@ input UpdateTodo {
 }
 
 type Mutation {
-    createTodo(input: NewTodo!): Todo!
-    updateTodo(id: ID!, input: UpdateTodo!): Todo!
-    deleteTodo(id: ID!): Todo
+  createTodo(input: NewTodo!): Todo!
+  updateTodo(id: ID!, input: UpdateTodo!): Todo!
+  deleteTodo(id: ID!): Todo!
 }
 `, BuiltIn: false},
 }
@@ -619,11 +620,14 @@ func (ec *executionContext) _Mutation_deleteTodo(ctx context.Context, field grap
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(*model.Todo)
 	fc.Result = res
-	return ec.marshalOTodo2ᚖtodoᚑbackendᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚖtodoᚑbackendᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
@@ -799,11 +803,14 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(*model.TodoConnection)
 	fc.Result = res
-	return ec.marshalOTodoConnection2ᚖtodoᚑbackendᚋgraphᚋmodelᚐTodoConnection(ctx, field.Selections, res)
+	return ec.marshalNTodoConnection2ᚖtodoᚑbackendᚋgraphᚋmodelᚐTodoConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1144,11 +1151,14 @@ func (ec *executionContext) _TodoEdge_node(ctx context.Context, field graphql.Co
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(*model.Todo)
 	fc.Result = res
-	return ec.marshalOTodo2ᚖtodoᚑbackendᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚖtodoᚑbackendᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -2362,6 +2372,9 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "deleteTodo":
 			out.Values[i] = ec._Mutation_deleteTodo(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2442,6 +2455,9 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_todos(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			})
 		case "__type":
@@ -2548,6 +2564,9 @@ func (ec *executionContext) _TodoEdge(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "node":
 			out.Values[i] = ec._TodoEdge_node(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2881,6 +2900,20 @@ func (ec *executionContext) marshalNTodo2ᚖtodoᚑbackendᚋgraphᚋmodelᚐTod
 		return graphql.Null
 	}
 	return ec._Todo(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNTodoConnection2todoᚑbackendᚋgraphᚋmodelᚐTodoConnection(ctx context.Context, sel ast.SelectionSet, v model.TodoConnection) graphql.Marshaler {
+	return ec._TodoConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTodoConnection2ᚖtodoᚑbackendᚋgraphᚋmodelᚐTodoConnection(ctx context.Context, sel ast.SelectionSet, v *model.TodoConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._TodoConnection(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNTodoEdge2ᚕᚖtodoᚑbackendᚋgraphᚋmodelᚐTodoEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.TodoEdge) graphql.Marshaler {
@@ -3282,13 +3315,6 @@ func (ec *executionContext) marshalOTodo2ᚖtodoᚑbackendᚋgraphᚋmodelᚐTod
 		return graphql.Null
 	}
 	return ec._Todo(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOTodoConnection2ᚖtodoᚑbackendᚋgraphᚋmodelᚐTodoConnection(ctx context.Context, sel ast.SelectionSet, v *model.TodoConnection) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._TodoConnection(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {
