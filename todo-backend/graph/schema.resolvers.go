@@ -27,6 +27,24 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, id string, input mode
 	panic(fmt.Errorf("not implemented"))
 }
 
+func (r *mutationResolver) DeleteTodo(ctx context.Context, id string) (*model.Todo, error) {
+	found := -1
+	var todo *model.Todo
+	for i, edge := range r.todos.Edges {
+		if edge.Node.ID == id {
+			todo = edge.Node
+			found = i
+			break
+		}
+	}
+	if found >= 0 {
+		r.todos.Edges = append(r.todos.Edges[:found], r.todos.Edges[found+1:]...)
+		return todo, nil
+	}
+
+	return nil, fmt.Errorf("todo with id '%s' could not be found", id)
+}
+
 func (r *queryResolver) Todo(ctx context.Context, id string) (*model.Todo, error) {
 	panic(fmt.Errorf("not implemented"))
 }
