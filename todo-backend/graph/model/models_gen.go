@@ -28,3 +28,8 @@ type TodoEdge struct {
 	Cursor string `json:"cursor"`
 	Node   *Todo  `json:"node"`
 }
+
+type UpdateTodo struct {
+	Title     *string `json:"title"`
+	Completed *bool   `json:"completed"`
+}

@@ -45,7 +45,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateTodo func(childComplexity int, input model.NewTodo) int
 		DeleteTodo func(childComplexity int, id string) int
-		UpdateTodo func(childComplexity int, id string, input model.NewTodo) int
+		UpdateTodo func(childComplexity int, id string, input model.UpdateTodo) int
 	}
 
 	PageInfo struct {
@@ -79,7 +79,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error)
-	UpdateTodo(ctx context.Context, id string, input model.NewTodo) (*model.Todo, error)
+	UpdateTodo(ctx context.Context, id string, input model.UpdateTodo) (*model.Todo, error)
 	DeleteTodo(ctx context.Context, id string) (*model.Todo, error)
 }
 type QueryResolver interface {
@@ -136,7 +136,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateTodo(childComplexity, args["id"].(string), args["input"].(model.NewTodo)), true
+		return e.complexity.Mutation.UpdateTodo(childComplexity, args["id"].(string), args["input"].(model.UpdateTodo)), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
@@ -339,9 +339,14 @@ input NewTodo {
     title: String!
 }
 
+input UpdateTodo {
+    title: String
+    completed: Boolean
+}
+
 type Mutation {
     createTodo(input: NewTodo!): Todo!
-    updateTodo(id: ID!, input: NewTodo!): Todo!
+    updateTodo(id: ID!, input: UpdateTodo!): Todo!
     deleteTodo(id: ID!): Todo
 }
 `, BuiltIn: false},
@@ -394,10 +399,10 @@ func (ec *executionContext) field_Mutation_updateTodo_args(ctx context.Context, 
 		}
 	}
 	args["id"] = arg0
-	var arg1 model.NewTodo
+	var arg1 model.UpdateTodo
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNNewTodo2todoᚑbackendᚋgraphᚋmodelᚐNewTodo(ctx, tmp)
+		arg1, err = ec.unmarshalNUpdateTodo2todoᚑbackendᚋgraphᚋmodelᚐUpdateTodo(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -565,7 +570,7 @@ func (ec *executionContext) _Mutation_updateTodo(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateTodo(rctx, args["id"].(string), args["input"].(model.NewTodo))
+		return ec.resolvers.Mutation().UpdateTodo(rctx, args["id"].(string), args["input"].(model.UpdateTodo))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2291,6 +2296,37 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateTodo(ctx context.Context, obj interface{}) (model.UpdateTodo, error) {
+	var it model.UpdateTodo
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "title":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			it.Title, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "completed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("completed"))
+			it.Completed, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -2899,6 +2935,11 @@ func (ec *executionContext) marshalNTodoEdge2ᚖtodoᚑbackendᚋgraphᚋmodel�
 		return graphql.Null
 	}
 	return ec._TodoEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUpdateTodo2todoᚑbackendᚋgraphᚋmodelᚐUpdateTodo(ctx context.Context, v interface{}) (model.UpdateTodo, error) {
+	res, err := ec.unmarshalInputUpdateTodo(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

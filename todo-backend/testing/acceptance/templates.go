@@ -46,3 +46,22 @@ mutation DeleteTodoTest($id: ID!) {
     title
   }
 }`
+
+type updateTodoResponse struct {
+	UpdateTodo model.Todo
+}
+
+var updateTodoTemplate = `
+mutation UpdateTodoTest($id: ID!, $title: String, $completed: Boolean) {
+  updateTodo(
+    id: $id
+    input: {
+      title: $title
+      completed: $completed
+    }
+  ) {
+    id
+    title
+	completed
+  }
+}`

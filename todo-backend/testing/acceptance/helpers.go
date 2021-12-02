@@ -15,7 +15,7 @@ func NewClient() *client.Client {
 }
 
 func Create(c *client.Client) model.Todo {
-	title := uuid.New().String()
+	title := uuid.NewString()
 	var resp createTodoResponse
 	c.MustPost(createTodoTemplate, &resp, client.Var("title", title))
 	return resp.CreateTodo

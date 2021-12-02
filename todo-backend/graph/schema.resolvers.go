@@ -23,8 +23,26 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	return next, nil
 }
 
-func (r *mutationResolver) UpdateTodo(ctx context.Context, id string, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) UpdateTodo(ctx context.Context, id string, input model.UpdateTodo) (*model.Todo, error) {
+	for _, edge := range r.todos.Edges {
+		if edge.Node.ID == id {
+			next := &model.Todo{
+				ID:        edge.Node.ID,
+				Title:     edge.Node.Title,
+				Completed: edge.Node.Completed,
+			}
+			if input.Title != nil {
+				next.Title = *input.Title
+			}
+			if input.Completed != nil {
+				next.Completed = *input.Completed
+			}
+			edge.Node = next
+			return next, nil
+		}
+	}
+
+	return nil, fmt.Errorf("todo with id '%s' could not be found", id)
 }
 
 func (r *mutationResolver) DeleteTodo(ctx context.Context, id string) (*model.Todo, error) {
