@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import gql from "graphql-tag";
 
+import { useRemote } from '../../../env'
 import {
   Todo,
   TodoEdge,
@@ -53,6 +54,4 @@ const useUpdateTodoRemote = () => {
   return [updateTodo];
 };
 
-// TODO: use ENV variable
-// eslint-disable-next-line no-constant-condition
-export const useUpdateTodo = false ? useUpdateTodoLocal : useUpdateTodoRemote;
+export const useUpdateTodo = useRemote() ? useUpdateTodoRemote : useUpdateTodoLocal;

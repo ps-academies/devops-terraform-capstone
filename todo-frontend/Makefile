@@ -6,6 +6,7 @@ LOG := @sh -c '\
 	   echo -e "\n> $$1\n"; \
 	   printf ${NC}' VALUE
 
+NODE_ENV := development
 
 generate:
 	$(LOG) "Generating frontend types..."

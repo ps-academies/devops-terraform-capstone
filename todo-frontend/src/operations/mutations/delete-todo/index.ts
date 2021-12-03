@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import gql from "graphql-tag";
 
+import { useRemote } from '../../../env'
 import { todosVar, useDeleteTodoMutation } from "../../../state";
 
 export const DELETE_TODO = gql`
@@ -37,6 +38,4 @@ const useDeleteTodoRemote = () => {
   return [deleteTodo];
 };
 
-// TODO: use ENV variable
-// eslint-disable-next-line no-constant-condition
-export const useDeleteTodo = false ? useDeleteTodoLocal : useDeleteTodoRemote;
+export const useDeleteTodo = useRemote() ? useDeleteTodoRemote : useDeleteTodoLocal;

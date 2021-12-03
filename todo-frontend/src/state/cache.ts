@@ -1,6 +1,7 @@
 import { InMemoryCache, ReactiveVar, makeVar } from "@apollo/client";
 import { v4 as uuid } from "uuid";
 
+import { useRemote } from '../env'
 import {
   Pagination,
   Todo,
@@ -12,9 +13,11 @@ export const cache: InMemoryCache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
-//        todos: {
-//          read: () => todosVar(),
-//        },
+        ...(!useRemote() && {
+          todos: {
+            read: () => todosVar(),
+          },
+        }),
         pagination: {
           read: () => paginationVar(),
         },
