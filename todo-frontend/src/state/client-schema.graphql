@@ -13,7 +13,3 @@ extend type Query {
   pagination: Pagination!
   visibilityFilter: VisibilityFilter!
 }
-
-extend type Todo {
-  completed: Boolean!
-}

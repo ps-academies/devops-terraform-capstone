@@ -7,7 +7,7 @@ import React, {
 import cx from "classnames";
 
 import { useOnEscape } from "../hooks";
-import { Todo, UpdatedTodo } from "../state";
+import { Todo, UpdateTodo } from "../state";
 
 export const TodoList: React.FC = (props) => (
   <ul className="todo-list" {...props} />
@@ -16,7 +16,7 @@ export const TodoList: React.FC = (props) => (
 interface TodoListItemProps {
   todo: Todo;
   onDelete: (id: string) => void;
-  onUpdate: (id: string, input: UpdatedTodo) => void;
+  onUpdate: (id: string, input: UpdateTodo) => void;
 }
 
 export const TodoListItem: React.FC<TodoListItemProps> = (props) => {
@@ -37,7 +37,7 @@ export const TodoListItem: React.FC<TodoListItemProps> = (props) => {
     save(input);
   };
 
-  const save = (input: UpdatedTodo) => {
+  const save = (input: UpdateTodo) => {
     onUpdate(todo.id, input);
     setEditing(false);
   };
@@ -67,7 +67,7 @@ export const TodoListItem: React.FC<TodoListItemProps> = (props) => {
 };
 
 interface TodoListItemEditInputProps extends Pick<TodoListItemProps, "todo"> {
-  onSubmit: (input: UpdatedTodo) => void;
+  onSubmit: (input: UpdateTodo) => void;
 }
 
 export const TodoListItemEditInput: React.FC<TodoListItemEditInputProps> = (

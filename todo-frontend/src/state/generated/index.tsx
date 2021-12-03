@@ -37,7 +37,7 @@ export type MutationDeleteTodoArgs = {
 
 export type MutationUpdateTodoArgs = {
   id: Scalars['ID'];
-  input: UpdatedTodo;
+  input: UpdateTodo;
 };
 
 export type NewTodo = {
@@ -97,8 +97,9 @@ export type TodoEdge = {
   node: Todo;
 };
 
-export type UpdatedTodo = {
-  title: Scalars['String'];
+export type UpdateTodo = {
+  completed?: InputMaybe<Scalars['Boolean']>;
+  title?: InputMaybe<Scalars['String']>;
 };
 
 export type VisibilityFilter = {
@@ -123,7 +124,7 @@ export type DeleteTodoMutation = { __typename?: 'Mutation', deleteTodo: { __type
 
 export type UpdateTodoMutationVariables = Exact<{
   id: Scalars['ID'];
-  input: UpdatedTodo;
+  input: UpdateTodo;
 }>;
 
 
@@ -213,7 +214,7 @@ export type DeleteTodoMutationHookResult = ReturnType<typeof useDeleteTodoMutati
 export type DeleteTodoMutationResult = Apollo.MutationResult<DeleteTodoMutation>;
 export type DeleteTodoMutationOptions = Apollo.BaseMutationOptions<DeleteTodoMutation, DeleteTodoMutationVariables>;
 export const UpdateTodoDocument = gql`
-    mutation UpdateTodo($id: ID!, $input: UpdatedTodo!) {
+    mutation UpdateTodo($id: ID!, $input: UpdateTodo!) {
   updateTodo(id: $id, input: $input) {
     id
     title
@@ -447,7 +448,7 @@ export type ResolversTypes = ResolversObject<{
   Todo: ResolverTypeWrapper<Todo>;
   TodoConnection: ResolverTypeWrapper<TodoConnection>;
   TodoEdge: ResolverTypeWrapper<TodoEdge>;
-  UpdatedTodo: UpdatedTodo;
+  UpdateTodo: UpdateTodo;
   VisibilityFilter: ResolverTypeWrapper<VisibilityFilter>;
 }>;
 
@@ -465,7 +466,7 @@ export type ResolversParentTypes = ResolversObject<{
   Todo: Todo;
   TodoConnection: TodoConnection;
   TodoEdge: TodoEdge;
-  UpdatedTodo: UpdatedTodo;
+  UpdateTodo: UpdateTodo;
   VisibilityFilter: VisibilityFilter;
 }>;
 
