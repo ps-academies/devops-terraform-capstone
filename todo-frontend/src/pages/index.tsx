@@ -27,7 +27,7 @@ import { Pagination } from "../components/Pagination";
 import { TodoList, TodoListItem } from "../components/TodoList";
 
 const IndexRoute: React.FC = () => {
-  const { data: todosData } = useGetTodosQuery();
+  const { data: todosData, loading, error } = useGetTodosQuery();
   const [createTodo] = useCreateTodo();
   const [deleteTodo] = useDeleteTodo();
   const [updateTodo] = useUpdateTodo();

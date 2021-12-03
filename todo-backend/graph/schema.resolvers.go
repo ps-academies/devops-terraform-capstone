@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"todo-backend/graph/generated"
 	"todo-backend/graph/model"
@@ -13,12 +14,21 @@ import (
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	next := &model.Todo{
-		ID:    uuid.NewString(),
-		Title: input.Title,
+	if len(input.Title) <= 0 {
+		return nil, errors.New("todo 'title' required")
 	}
-	nextEdge := model.TodoEdge{Node: next}
+
+	next := &model.Todo{
+		ID:        uuid.NewString(),
+		Title:     input.Title,
+		Completed: false,
+	}
+	nextEdge := model.TodoEdge{
+		Cursor: next.ID,
+		Node:   next,
+	}
 	r.todos.Edges = append(r.todos.Edges, &nextEdge)
+	*r.todos.TotalCount++
 
 	return next, nil
 }

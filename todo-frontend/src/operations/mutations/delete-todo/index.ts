@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import gql from "graphql-tag";
 
-import { todosVar } from "../../../state";
+import { todosVar, useDeleteTodoMutation } from "../../../state";
 
 export const DELETE_TODO = gql`
   mutation DeleteTodo($id: ID!) {
@@ -25,8 +25,13 @@ const useDeleteTodoLocal = () => {
 };
 
 const useDeleteTodoRemote = () => {
-  const deleteTodo = useCallback(() => {
-    //
+  const [deleteTodoMutation] = useDeleteTodoMutation();
+
+  const deleteTodo = useCallback<(id: string) => void>((id) => {
+      deleteTodoMutation({
+        refetchQueries: ['GetTodos'],
+        variables: { id },
+      });
   }, []);
 
   return [deleteTodo];
@@ -34,4 +39,4 @@ const useDeleteTodoRemote = () => {
 
 // TODO: use ENV variable
 // eslint-disable-next-line no-constant-condition
-export const useDeleteTodo = true ? useDeleteTodoLocal : useDeleteTodoRemote;
+export const useDeleteTodo = false ? useDeleteTodoLocal : useDeleteTodoRemote;

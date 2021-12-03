@@ -13,11 +13,15 @@ generate:
 test: test-acceptance test-unit
 
 test-unit:
-	$(LOG) "Running unit tests"	
+	$(LOG) "Running backend unit tests.."	
 	@go test -v ./...
-
 
 test-acceptance:
 	$(LOG) "Running acceptance tests"	
 	@go test -v -race -tags=acceptance ./testing/acceptance/...
+
+
+run:
+	$(LOG) "Running backend..."	
+	@go run server.go
 

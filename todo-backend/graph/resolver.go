@@ -11,9 +11,17 @@ type Resolver struct {
 }
 
 func NewResolver() *Resolver {
+	defaultTotalCount := 0
+	defaultHasNextPage := false
 	return &Resolver{
 		todos: &model.TodoConnection{
-			Edges: []*model.TodoEdge{},
+			PageInfo: &model.PageInfo{
+				StartCursor: "cur",
+				EndCursor:   "cur",
+				HasNextPage: &defaultHasNextPage,
+			},
+			Edges:      []*model.TodoEdge{},
+			TotalCount: &defaultTotalCount,
 		},
 	}
 }

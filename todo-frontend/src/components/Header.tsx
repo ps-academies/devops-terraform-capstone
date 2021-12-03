@@ -29,10 +29,11 @@ export const HeaderNewTodoInput: React.FC<HeaderNewTodoInputProps> = ({
   const save: KeyboardEventHandler<HTMLInputElement> = (evt) => {
     if (evt.key !== "Enter") return;
     if (!(evt.target instanceof HTMLInputElement)) return;
-    const title = evt.target.value.trim();
-    const input = { title };
 
-    createTodo(input);
+    const title = evt.target.value.trim();
+    if(title === '') return;
+
+    createTodo({ title });
     setValue("");
   };
   return (

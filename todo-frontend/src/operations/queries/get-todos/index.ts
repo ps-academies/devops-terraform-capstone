@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 
 export const GET_TODOS = gql`
   query GetTodos {
-    todos @client {
+    todos {
       edges {
         cursor
         node {

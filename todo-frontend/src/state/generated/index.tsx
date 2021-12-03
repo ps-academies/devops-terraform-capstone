@@ -287,7 +287,7 @@ export type GetPaginationLazyQueryHookResult = ReturnType<typeof useGetPaginatio
 export type GetPaginationQueryResult = Apollo.QueryResult<GetPaginationQuery, GetPaginationQueryVariables>;
 export const GetTodosDocument = gql`
     query GetTodos {
-  todos @client {
+  todos {
     edges {
       cursor
       node {

@@ -55,4 +55,4 @@ const useUpdateTodoRemote = () => {
 
 // TODO: use ENV variable
 // eslint-disable-next-line no-constant-condition
-export const useUpdateTodo = true ? useUpdateTodoLocal : useUpdateTodoRemote;
+export const useUpdateTodo = false ? useUpdateTodoLocal : useUpdateTodoRemote;

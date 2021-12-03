@@ -38,7 +38,7 @@ export const TodoListItem: React.FC<TodoListItemProps> = (props) => {
   };
 
   const save = (input: UpdateTodo) => {
-    onUpdate(todo.id, input);
+    onUpdate(todo.id, { completed: input.completed, title: input.title });
     setEditing(false);
   };
 

@@ -12,9 +12,9 @@ export const cache: InMemoryCache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
-        todos: {
-          read: () => todosVar(),
-        },
+//        todos: {
+//          read: () => todosVar(),
+//        },
         pagination: {
           read: () => paginationVar(),
         },
