@@ -4,18 +4,13 @@
 package acceptance
 
 import (
+	"github.com/99designs/gqlgen/client"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"todo-backend/graph"
-	"todo-backend/graph/generated"
-
-	"github.com/99designs/gqlgen/client"
-	"github.com/99designs/gqlgen/graphql/handler"
 )
 
 func TestCreateTodo(t *testing.T) {
-	cfg := generated.Config{Resolvers: graph.NewResolver()}
-	c := client.New(handler.NewDefaultServer(generated.NewExecutableSchema(cfg)))
+	c := NewClient()
 
 	var resp createTodoResponse
 	title := "hello world"
