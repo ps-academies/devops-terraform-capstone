@@ -16,7 +16,9 @@ import {
   useGetVisibilityFilterQuery,
 } from "../state";
 
+import { ErrorBanner } from "../components/ErrorBanner";
 import { Header, HeaderTitle, HeaderNewTodoInput } from "../components/Header";
+import { Loading } from "../components/Loading";
 import {
   Footer,
   FooterActiveCount,
@@ -103,6 +105,9 @@ const IndexRoute: React.FC = () => {
           <HeaderTitle />
           <HeaderNewTodoInput createTodo={createTodo} />
         </Header>
+
+        {error && <ErrorBanner>Unexpected Error</ErrorBanner>}
+        {loading && <Loading />}
 
         {hasSelectedItems && (
           <Main>
