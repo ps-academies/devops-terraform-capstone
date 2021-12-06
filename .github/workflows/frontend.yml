@@ -30,3 +30,26 @@ jobs:
         working-directory: todo-frontend
       - run: yarn test --ci --collect-coverage --verbose
         working-directory: todo-frontend
+
+  deploy:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Configure AWS cli
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      - name: Install Dependencies
+        run: yarn install
+        working-directory: todo-frontend
+      - name: Build static files
+        run: yarn build
+        working-directory: todo-frontend
+      - name: Upload files to S3
+        run: aws s3 cp public s3://${{ env.BUCKET_NAME }}/ --recursive --acl public-read
