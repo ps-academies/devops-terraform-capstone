@@ -47,10 +47,12 @@ mutation DeleteTodoTest($id: ID!) {
   }
 }`
 
+//nolint
 type updateTodoResponse struct {
 	UpdateTodo model.Todo
 }
 
+//nolint
 var updateTodoTemplate = `
 mutation UpdateTodoTest($id: ID!, $title: String, $completed: Boolean) {
   updateTodo(
