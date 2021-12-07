@@ -10,7 +10,8 @@ import (
 )
 
 func TestCreateTodo(t *testing.T) {
-	c := NewClient()
+	c, err := NewClient()
+	assert.Nil(t, err)
 
 	var resp createTodoResponse
 	title := "hello world"

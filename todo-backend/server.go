@@ -28,7 +28,10 @@ func main() {
 }
 
 func graphqlHandler() gin.HandlerFunc {
-	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: graph.NewResolver()}))
+	res, err := graph.NewResolver()
+	handleError(err)
+
+	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: res}))
 
 	return func(c *gin.Context) {
 		h.ServeHTTP(c.Writer, c.Request)

@@ -6,7 +6,6 @@ package graph
 import (
 	"context"
 	"errors"
-	"fmt"
 	"todo-backend/graph/generated"
 	"todo-backend/graph/model"
 
@@ -18,67 +17,79 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 		return nil, errors.New("todo 'title' required")
 	}
 
+	id := uuid.NewString()
+
 	next := &model.Todo{
-		ID:        uuid.NewString(),
+		ID:        id,
 		Title:     input.Title,
 		Completed: false,
 	}
-	nextEdge := model.TodoEdge{
-		Cursor: next.ID,
-		Node:   next,
-	}
-	r.todos.Edges = append(r.todos.Edges, &nextEdge)
-	*r.todos.TotalCount++
 
+	err := r.database.InsertTodo(ctx, next)
+	if err != nil {
+		return nil, err
+	}
 	return next, nil
 }
 
 func (r *mutationResolver) UpdateTodo(ctx context.Context, id string, input model.UpdateTodo) (*model.Todo, error) {
-	for _, edge := range r.todos.Edges {
-		if edge.Node.ID == id {
-			next := &model.Todo{
-				ID:        edge.Node.ID,
-				Title:     edge.Node.Title,
-				Completed: edge.Node.Completed,
-			}
-			if input.Title != nil {
-				next.Title = *input.Title
-			}
-			if input.Completed != nil {
-				next.Completed = *input.Completed
-			}
-			edge.Node = next
-			return next, nil
-		}
+	next, err := r.database.GetTodo(ctx, id)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil, fmt.Errorf("todo with id '%s' could not be found", id)
+	if input.Title != nil {
+		next.Title = *input.Title
+	}
+	if input.Completed != nil {
+		next.Completed = *input.Completed
+	}
+
+	err = r.database.UpdateTodo(ctx, next)
+	return next, err
 }
 
 func (r *mutationResolver) DeleteTodo(ctx context.Context, id string) (*model.Todo, error) {
-	found := -1
-	var todo *model.Todo
-	for i, edge := range r.todos.Edges {
-		if edge.Node.ID == id {
-			todo = edge.Node
-			found = i
-			break
-		}
+	todo, err := r.database.GetTodo(ctx, id)
+	if err != nil {
+		return nil, err
 	}
-	if found >= 0 {
-		r.todos.Edges = append(r.todos.Edges[:found], r.todos.Edges[found+1:]...)
-		return todo, nil
-	}
+	err = r.database.RemoveTodo(ctx, id)
 
-	return nil, fmt.Errorf("todo with id '%s' could not be found", id)
+	return todo, err
 }
 
 func (r *queryResolver) Todo(ctx context.Context, id string) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented"))
+	return r.database.GetTodo(ctx, id)
 }
 
 func (r *queryResolver) Todos(ctx context.Context, first *int, after *string) (*model.TodoConnection, error) {
-	return r.todos, nil
+	todos, err := r.database.GetAllTodo(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var edges []*model.TodoEdge
+	for _, todo := range todos {
+		td := todo
+		edges = append(edges, &model.TodoEdge{
+			Node:   &td,
+			Cursor: todo.ID,
+		})
+	}
+
+	defaultHasNextPage := false
+	totalCount := len(todos)
+
+	return &model.TodoConnection{
+		Edges: edges,
+		PageInfo: &model.PageInfo{
+			StartCursor: "",
+			EndCursor:   "",
+			HasNextPage: &defaultHasNextPage,
+		},
+		TotalCount: &totalCount,
+	}, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

@@ -13,7 +13,8 @@ import (
 
 
 func TestUpdate_TitleAndCompleted(t *testing.T) {
-	c := NewClient()
+	c, err := NewClient()
+	assert.Nil(t, err)
 
 	createdCount := 5
 	updateIndex := 2
@@ -52,7 +53,8 @@ func TestUpdate_TitleAndCompleted(t *testing.T) {
 }
 
 func TestUpdate_TitleOnly(t *testing.T) {
-	c := NewClient()
+	c, err := NewClient()
+	assert.Nil(t, err)
 
 	createdCount := 5
 	updateIndex := 2
@@ -89,7 +91,8 @@ func TestUpdate_TitleOnly(t *testing.T) {
 }
 
 func TestUpdate_CompletedOnly(t *testing.T) {
-	c := NewClient()
+	c, err := NewClient()
+	assert.Nil(t, err)
 
 	createdCount := 5
 	updateIndex := 2

@@ -10,9 +10,9 @@ import (
 	"todo-backend/graph/model"
 )
 
-
 func TestDelete(t *testing.T) {
-	c := NewClient()
+	c, err := NewClient()
+	assert.Nil(t, err)
 
 	createdCount := 5
 

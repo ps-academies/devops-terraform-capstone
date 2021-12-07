@@ -1,17 +1,22 @@
 package acceptance
 
 import (
-	"github.com/99designs/gqlgen/client"
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/google/uuid"
 	"todo-backend/graph"
 	"todo-backend/graph/generated"
 	"todo-backend/graph/model"
+
+	"github.com/99designs/gqlgen/client"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/google/uuid"
 )
 
-func NewClient() *client.Client {
-	cfg := generated.Config{Resolvers: graph.NewResolver()}
-	return client.New(handler.NewDefaultServer(generated.NewExecutableSchema(cfg)))
+func NewClient() (*client.Client, error) {
+	res, err := graph.NewResolver()
+	if err != nil {
+		return nil, err
+	}
+	cfg := generated.Config{Resolvers: res}
+	return client.New(handler.NewDefaultServer(generated.NewExecutableSchema(cfg))), nil
 }
 
 func Create(c *client.Client) model.Todo {

@@ -9,7 +9,8 @@ import (
 )
 
 func TestGetMany(t *testing.T) {
-	c := NewClient()
+	c, err := NewClient()
+	assert.Nil(t, err)
 
 	expectedCount := 5
 
