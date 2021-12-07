@@ -126,4 +126,10 @@ func TestUpdate_CompletedOnly(t *testing.T) {
 			assert.Contains(t, GetAll(c), todo)
 		}
 	})
+
+	t.Cleanup(func() {
+		for _, todo := range todos {
+			LogCleanupError(t, Delete(c, todo.ID))
+		}
+	})
 }

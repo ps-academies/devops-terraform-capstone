@@ -25,4 +25,8 @@ func TestCreateTodo(t *testing.T) {
 	t.Run("ID should not be empty", func(t *testing.T) {
 		assert.NotEmpty(t, resp.CreateTodo.ID, "expected a non-empty ID")
 	})
+
+	t.Cleanup(func() {
+		LogCleanupError(t, Delete(c, resp.CreateTodo.ID))
+	})
 }

@@ -16,9 +16,12 @@ func TestGetMany(t *testing.T) {
 
 	var resp getManyTodoResponse
 	var titles []string
+	var ids []string
 
 	for i := 0; i < expectedCount; i++ {
-		titles = append(titles, Create(c).Title)
+		todo := Create(c)
+		titles = append(titles, todo.Title)
+		ids = append(titles, todo.ID)
 	}
 
 	c.MustPost(getManyTodoTemplate, &resp)
@@ -29,5 +32,11 @@ func TestGetMany(t *testing.T) {
 			actual = append(actual, edge.Node.Title)
 		}
 		assert.Subset(t, actual, titles)
+	})
+
+	t.Cleanup(func() {
+		for _, id := range ids {
+			LogCleanupError(t, Delete(c, id))
+		}
 	})
 }

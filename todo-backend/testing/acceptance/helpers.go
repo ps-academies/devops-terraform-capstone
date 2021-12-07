@@ -1,6 +1,7 @@
 package acceptance
 
 import (
+	"testing"
 	"todo-backend/graph"
 	"todo-backend/graph/generated"
 	"todo-backend/graph/model"
@@ -26,9 +27,14 @@ func Create(c *client.Client) model.Todo {
 	return resp.CreateTodo
 }
 
-func Delete(c *client.Client, id string) {
+func MustDelete(c *client.Client, id string) {
 	var resp deleteTodoResponse
 	c.MustPost(deleteTodoTemplate, &resp, client.Var("id", id))
+}
+
+func Delete(c *client.Client, id string) error {
+	var resp deleteTodoResponse
+	return c.Post(deleteTodoTemplate, &resp, client.Var("id", id))
 }
 
 func GetAll(c *client.Client) (todos []model.Todo) {
@@ -40,4 +46,10 @@ func GetAll(c *client.Client) (todos []model.Todo) {
 	}
 
 	return
+}
+
+func LogCleanupError(t *testing.T, err error) {
+	if err != nil {
+		t.Logf("Cleanup: %s\n", err.Error())
+	}
 }
