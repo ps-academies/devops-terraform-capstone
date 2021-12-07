@@ -35,8 +35,6 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     environment: production
-    env:
-      REMOTE_SCHEMA_URL: ${{ env.REMOTE_SCHEMA_URL }}
     steps:
       - uses: actions/checkout@v2
       - name: Configure AWS cli
@@ -54,5 +52,7 @@ jobs:
       - name: Build static files
         run: yarn build
         working-directory: todo-frontend
+        env:
+          REMOTE_SCHEMA_URL: ${{ env.REMOTE_SCHEMA_URL }}
       - name: Upload files to S3
         run: aws s3 cp public s3://${{ env.BUCKET_NAME }}/ --recursive --acl public-read
