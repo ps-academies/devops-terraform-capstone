@@ -2,7 +2,9 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"todo-backend/db"
+	"todo-backend/settings"
 )
 
 // This file will not be regenerated automatically.
@@ -13,8 +15,15 @@ type Resolver struct {
 	database *db.Database
 }
 
-func NewResolver() (*Resolver, error) {
-	connString := "postgres://todo_admin:postgres@127.0.0.1:5432/todos"
+func NewResolver(cfg *settings.Configuration) (*Resolver, error) {
+	connString := fmt.Sprintf(
+		"postgres://%s:%s@%s:%d/%s",
+		cfg.Postgres().Username(),
+		cfg.Postgres().Password(),
+		cfg.Postgres().Host(),
+		cfg.Postgres().Port(),
+		cfg.Postgres().DB(),
+	)
 
 	ctx := context.Background()
 	conn, err := db.NewDatabase(ctx, connString)

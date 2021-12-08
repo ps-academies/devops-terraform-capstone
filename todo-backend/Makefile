@@ -6,6 +6,8 @@ LOG := @sh -c '\
 	   echo -e "\n> $$1\n"; \
 	   printf ${NC}' VALUE
 
+VERSION ?= 0.1.0
+
 generate:
 	$(LOG) "Regenerating from schema..."
 	@go run github.com/99designs/gqlgen generate
@@ -14,6 +16,13 @@ generate:
 build:
 	$(LOG) "Building backend..."
 	@go build ./...
+
+
+
+binary:
+	$(LOG) "Building backend with version ${VERSION}..."
+	@go build -o dist/todo -ldflags="-X main.version=${VERSION}" .
+
 
 test: test-acceptance test-unit
 

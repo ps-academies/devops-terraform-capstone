@@ -5,6 +5,7 @@ import (
 	"todo-backend/graph"
 	"todo-backend/graph/generated"
 	"todo-backend/graph/model"
+	"todo-backend/settings"
 
 	"github.com/99designs/gqlgen/client"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -12,7 +13,7 @@ import (
 )
 
 func NewClient() (*client.Client, error) {
-	res, err := graph.NewResolver()
+	res, err := graph.NewResolver(settings.NewConfiguration())
 	if err != nil {
 		return nil, err
 	}

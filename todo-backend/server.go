@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
-	"os"
 	"todo-backend/graph"
 	"todo-backend/graph/generated"
+	"todo-backend/settings"
 
 	"github.com/gin-gonic/gin"
 
@@ -12,23 +12,23 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 )
 
-const defaultPort = "8080"
+var version string = "0.0.0"
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
+	settings.SetAppVersion(version)
+	cfg := settings.NewConfiguration()
 
 	r := gin.Default()
 	r.Use(CORSMiddleware())
-	r.POST("/query", graphqlHandler())
+	r.POST("/query", graphqlHandler(cfg))
 	r.GET("/", playgroundHandler())
-	handleError(r.Run(":" + port))
+
+	log.Default().Printf("Running todo backend version '%s'\n", version)
+	handleError(r.Run(cfg.App().BindAddress()))
 }
 
-func graphqlHandler() gin.HandlerFunc {
-	res, err := graph.NewResolver()
+func graphqlHandler(cfg *settings.Configuration) gin.HandlerFunc {
+	res, err := graph.NewResolver(cfg)
 	handleError(err)
 
 	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: res}))
