@@ -13,6 +13,11 @@ generate:
 	@go run github.com/99designs/gqlgen generate
 
 
+dependencies:
+	$(LOG) "Running dependencies..."
+	@docker-compose up -d
+
+
 build:
 	$(LOG) "Building backend..."
 	@go build ./...
