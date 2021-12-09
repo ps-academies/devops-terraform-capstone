@@ -11,3 +11,7 @@ variable "secret_key" {
   type = string
 }
 
+variable "project_name" {
+  type    = string
+  default = "todo"
+}
