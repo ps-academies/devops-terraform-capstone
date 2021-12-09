@@ -48,7 +48,7 @@ data "aws_iam_policy_document" "kms_key" {
 
     principals {
       type        = "AWS"
-      identifiers = [aws_iam_role.role.arn]
+      identifiers = [aws_iam_role.project.arn]
     }
   }
 }

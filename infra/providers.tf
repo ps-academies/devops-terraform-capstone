@@ -14,3 +14,9 @@ provider "aws" {
 }
 
 data "aws_caller_identity" "current" {}
+
+
+provider "github" {
+  token = var.github_token # or `${GITHUB_TOKEN}`
+  owner = var.github_user
+}

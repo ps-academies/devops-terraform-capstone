@@ -20,6 +20,7 @@ func main() {
 
 	r := gin.Default()
 	r.Use(CORSMiddleware())
+	r.GET("/health-check", healthCheckHandler(cfg))
 	r.POST("/query", graphqlHandler(cfg))
 	r.GET("/", playgroundHandler())
 
@@ -35,6 +36,19 @@ func graphqlHandler(cfg *settings.Configuration) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+func healthCheckHandler(cfg *settings.Configuration) gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+		c.JSON(200, struct {
+			App     string `json:"app"`
+			Version string `json:"version"`
+		}{
+			App:     "todo",
+			Version: cfg.App().Version(),
+		})
 	}
 }
 
