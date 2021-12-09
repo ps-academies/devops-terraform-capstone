@@ -25,3 +25,10 @@ resource "github_actions_environment_secret" "capstone_s3_bucket_name" {
   secret_name     = "S3_BUCKET_NAME"
   plaintext_value = aws_s3_bucket.frontend.bucket
 }
+
+resource "github_actions_environment_secret" "capstone_aws_region" {
+  environment     = github_repository_environment.capstone.environment
+  repository      = var.github_repo
+  secret_name     = "AWS_REGION"
+  plaintext_value = var.region
+}
