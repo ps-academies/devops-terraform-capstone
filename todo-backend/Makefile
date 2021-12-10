@@ -28,7 +28,9 @@ build:
 
 dist:
 	$(LOG) "Building backend with version ${VERSION}..."
-	@go build -o dist/todo -ldflags="-X main.version=${VERSION}" .
+	@CGO_ENABLED=0 \
+	  GOOS=linux \
+	  go build -o dist/todo -ldflags="-X main.version=${VERSION}" .
 	@cp todo.service dist/todo.service
 
 
