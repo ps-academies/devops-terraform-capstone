@@ -51,7 +51,7 @@ jobs:
           for i in "$(echo ${{ secrets.EC2_INSTANCE_IPS }})"; do \
             echo "Starting deploy to $i..."; \
             echo "  Stopping service if running..."; \
-            echo "Running command: ssh -i ./private_key -o StrictHostKeyChecking=no ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-active --quiet todo && sudo systemctl stop todo'"'; \
+            echo "Running command: ssh -i ./private_key -o StrictHostKeyChecking=no ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-active --quiet todo && sudo systemctl stop todo'"; \
             ssh -i ./private_key -o StrictHostKeyChecking=no ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-active --quiet todo && sudo systemctl stop todo'; \
             echo "  Copying files to instance..."; \
             scp -i ./private_key dist/* ${{ secrets.EC2_INSTANCE_USER }}@$i:~; \
