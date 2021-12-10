@@ -49,8 +49,12 @@ jobs:
         working-directory: todo-backend
         run: |
           for i in "$(echo ${{ secrets.EC2_INSTANCE_IPS }})"; do \
+            echo "Starting deploy to $i..."; \
+            echo "  Stopping service if running..."; \
             ssh -i ./private_key -o StrictHostKeyChecking=no ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-active --quiet todo && sudo systemctl stop todo'; \
+            echo "  Copying files to instance..."; \
             scp -i ./private_key dist/* ${{ secrets.EC2_INSTANCE_USER }}@$i:~; \
+            echo "  Moving files into place on instance..."; \
             ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo mv ~/todo /usr/local/bin/todo'; \
             ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo mv ~/todo.service /etc/systemd/system/todo.service'; \
           done
@@ -58,6 +62,7 @@ jobs:
         working-directory: todo-backend
         run: |
           for i in "$(echo ${{ secrets.EC2_INSTANCE_IPS }})"; do \
+            echo "Starting service on $i..."; \
             ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-enabled --quiet todo || sudo systemctl enable todo'; \
             ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl start todo'; \
           done
