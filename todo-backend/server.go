@@ -24,7 +24,7 @@ func main() {
 	r.POST("/query", graphqlHandler(cfg))
 	r.GET("/", playgroundHandler())
 
-	log.Default().Printf("Running todo backend version '%s'\n", version)
+	log.Printf("Running todo backend version '%s'\n", version)
 	handleError(r.Run(cfg.App().BindAddress()))
 }
 
