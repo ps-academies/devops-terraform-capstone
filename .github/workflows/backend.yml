@@ -40,16 +40,24 @@ jobs:
       - name: Build
         working-directory: todo-backend
         run: make dist
+      - name: Configure SSH
+        working-directory: todo-backend
+        run: |
+          printf ${{ secrets.BASE64_SSH_PRIVATE_KEY }} | base64 -d > private_key && \
+          chmod 0600 private_key
       - name: Deploy to EC2
         working-directory: todo-backend
         run: |
-          printf ${{ secrets.BASE64_SSH_PRIVATE_KEY }} | base64 -d > private_key
-          cat private_key
-          chmod 0600 private_key
           for i in "$(echo ${{ secrets.EC2_INSTANCE_IPS }})"; do \
-            scp -i private_key -o StrictHostKeyChecking=no dist/* ${{ secrets.EC2_INSTANCE_USER }}@$i:~; \
-            ssh -i private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo mv ~/todo /usr/local/bin/todo'; \
-            ssh -i private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo mv ~/todo.service /etc/systemd/system/todo.service'; \
-            ssh -i private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl enable todo'; \
-            ssh -i private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl start todo'; \
+            ssh -i ./private_key -o StrictHostKeyChecking=no ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-active --quiet todo && sudo systemctl stop todo'; \
+            scp -i ./private_key dist/* ${{ secrets.EC2_INSTANCE_USER }}@$i:~; \
+            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo mv ~/todo /usr/local/bin/todo'; \
+            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo mv ~/todo.service /etc/systemd/system/todo.service'; \
+          done
+      - name: Start service
+        working-directory: todo-backend
+        run: |
+          for i in "$(echo ${{ secrets.EC2_INSTANCE_IPS }})"; do \
+            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-enabled --quiet todo || sudo systemctl enable todo'; \
+            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl start todo'; \
           done
