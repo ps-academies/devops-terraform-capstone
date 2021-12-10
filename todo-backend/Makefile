@@ -8,6 +8,8 @@ LOG := @sh -c '\
 
 VERSION ?= 0.1.0
 
+.PHONY: dist
+
 generate:
 	$(LOG) "Regenerating from schema..."
 	@go run github.com/99designs/gqlgen generate

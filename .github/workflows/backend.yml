@@ -38,20 +38,16 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - uses: actions/setup-go@v2
       - name: Build
+        working-directory: todo-backend
         run: make dist
-        working-directory: todo-backend
-      - name: Copy to ec2
-        run: |
-          for i in "${{ secrets.EC2_INSTANCE_IPS }}"; do \
-            scp dist/todo ${{ secrets.EC2_INSTANCE_USER }}@$i:/usr/local/bin/todo; \
-            scp dist/todo.service ${{ secrets.EC2_INSTANCE_USER }}@$i:/etc/systemd/system/todo.service; \
-            done
-        working-directory: todo-backend
-      - name: Run server on EC2
+      - name: Deploy to EC2
         working-directory: todo-backend
         run: |
-          aws ssm send-command \
-            --targets "Key=tag:app,Values=todo" \
-            --document-name "AWS-StartTodoBackend" \
-            --comment "Starting the todo app backend graphql server" \
-            --parameters commands=["systemctl enable todo && systemctl start todo"]
+          printf ${{ secrets.BASE64_SSH_PRIVATE_KEY }} | base64 -d > private_key
+          for i in "$(echo ${{ secrets.EC2_INSTANCE_IPS }})"; do \
+            scp -i private_key dist/* ${{ secrets.EC2_INSTANCE_USER }}@$i:~; \
+            ssh -i private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo mv ~/todo /usr/local/bin/todo'; \
+            ssh -i private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo mv ~/todo.service /etc/systemd/system/todo.service'; \
+            ssh -i private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl enable todo'; \
+            ssh -i private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl start todo'; \
+          done
