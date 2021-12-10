@@ -1,0 +1,15 @@
+[Unit]
+Description="Todo GraphQL Backend"
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=5s
+ExecStart="todo"
+KillMode=none
+
+[Install]
+WantedBy=multi-user.target
+
+

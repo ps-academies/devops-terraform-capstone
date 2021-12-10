@@ -24,9 +24,10 @@ build:
 
 
 
-binary:
+dist:
 	$(LOG) "Building backend with version ${VERSION}..."
 	@go build -o dist/todo -ldflags="-X main.version=${VERSION}" .
+	@cp todo.service dist/todo.service
 
 
 test: test-acceptance test-unit

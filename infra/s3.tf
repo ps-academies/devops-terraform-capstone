@@ -1,10 +1,37 @@
 resource "random_uuid" "random_id" {}
 
 resource "aws_s3_bucket" "frontend" {
-  bucket        = "${var.project_name}-${random_uuid.random_id.id}"
-  acl           = "private"
+  bucket = "${var.project_name}-${random_uuid.random_id.id}"
+  acl    = "public-read"
+
   force_destroy = true
+
+  website {
+    index_document = "index.html"
+    error_document = "404.html"
+  }
 }
+
+resource "aws_s3_bucket_policy" "frontend" {
+  bucket = aws_s3_bucket.frontend.bucket
+  policy = data.aws_iam_policy_document.frontend.json
+}
+
+data "aws_iam_policy_document" "frontend" {
+  statement {
+    sid       = "PublicReadGetObject"
+    actions   = ["s3:GetObject"]
+    resources = ["arn:aws:s3:::${aws_s3_bucket.frontend.bucket}/*"]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+  }
+}
+
+
 
 resource "aws_s3_bucket" "logging" {
   bucket        = "access-logs-${random_uuid.random_id.id}"

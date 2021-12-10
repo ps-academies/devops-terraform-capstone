@@ -34,6 +34,15 @@ variable "project_name" {
   default = "todo"
 }
 
+variable "aws_tags" {
+  type = object({
+    app = string
+  })
+  default = {
+    app = "todo"
+  }
+}
+
 locals {
   elb_account_id = {
     us-east-1      = 127311923021

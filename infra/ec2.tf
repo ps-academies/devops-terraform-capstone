@@ -71,5 +71,7 @@ resource "aws_instance" "backend_server" {
   }
 
   depends_on = [aws_route_table.main]
+
+  tags = var.aws_tags
 }
 

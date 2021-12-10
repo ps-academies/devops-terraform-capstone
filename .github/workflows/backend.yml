@@ -21,3 +21,37 @@ jobs:
         working-directory: todo-backend
       - run: make test
         working-directory: todo-backend
+
+
+  deploy:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Configure AWS cli
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - uses: actions/setup-go@v2
+      - name: Build
+        run: make dist
+        working-directory: todo-backend
+      - name: Copy to ec2
+        run: |
+          for i in "${{ secrets.EC2_INSTANCE_IPS }}"; do \
+            scp dist/todo ${{ secrets.EC2_INSTANCE_USER }}@$i:/usr/local/bin/todo; \
+            scp dist/todo.service ${{ secrets.EC2_INSTANCE_USER }}@$i:/etc/systemd/system/todo.service; \
+            done
+        working-directory: todo-backend
+      - name: Run server on EC2
+        working-directory: todo-backend
+        run: |
+          aws ssm send-command \
+            --targets "Key=tag:app,Values=todo" \
+            --document-name "AWS-StartTodoBackend" \
+            --comment "Starting the todo app backend graphql server" \
+            --parameters commands=["systemctl enable todo && systemctl start todo"]
