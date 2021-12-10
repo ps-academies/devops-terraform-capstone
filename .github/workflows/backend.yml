@@ -44,6 +44,7 @@ jobs:
         working-directory: todo-backend
         run: |
           printf ${{ secrets.BASE64_SSH_PRIVATE_KEY }} | base64 -d > private_key
+          cat private_key
           chmod 0600 private_key
           for i in "$(echo ${{ secrets.EC2_INSTANCE_IPS }})"; do \
             scp -i private_key -o StrictHostKeyChecking=no dist/* ${{ secrets.EC2_INSTANCE_USER }}@$i:~; \
