@@ -57,6 +57,7 @@ jobs:
             echo "  Moving files into place on instance..."; \
             ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo mv ~/todo /usr/local/bin/todo'; \
             ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo mv ~/todo.service /etc/systemd/system/todo.service'; \
+            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl daemon-reload'; \
           done
       - name: Start service
         working-directory: todo-backend
@@ -65,4 +66,5 @@ jobs:
             echo "Starting service on $i..."; \
             ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-enabled --quiet todo || sudo systemctl enable todo'; \
             ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl start todo'; \
+            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-active --quiet todo'; \
           done
