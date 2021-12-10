@@ -13,6 +13,14 @@ resource "aws_security_group" "backend_server" {
   }
 
   ingress {
+    description = "ssh"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     description = "postgres-self"
     from_port   = 5432
     to_port     = 5432
@@ -55,9 +63,11 @@ resource "aws_instance" "backend_server" {
   instance_type        = "t2.micro"
   iam_instance_profile = aws_iam_instance_profile.backend_server.name
 
+  key_name = aws_key_pair.ssh_key.key_name
+
   subnet_id                   = aws_subnet.main.*.id[count.index]
   vpc_security_group_ids      = [aws_security_group.backend_server.id]
-  associate_public_ip_address = false
+  associate_public_ip_address = true
 
   monitoring = true
 

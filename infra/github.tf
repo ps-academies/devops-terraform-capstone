@@ -32,3 +32,10 @@ resource "github_actions_environment_secret" "capstone_aws_region" {
   secret_name     = "AWS_REGION"
   plaintext_value = var.region
 }
+
+resource "github_actions_environment_secret" "ssh_private_key" {
+  environment     = github_repository_environment.capstone.environment
+  repository      = var.github_repo
+  secret_name     = "SSH_PRIVATE_KEY"
+  plaintext_value = tls_private_key.ssh.private_key_pem
+}
