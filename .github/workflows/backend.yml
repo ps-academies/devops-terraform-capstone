@@ -1,6 +1,6 @@
 name: Todo Backend
 
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
   lint:
