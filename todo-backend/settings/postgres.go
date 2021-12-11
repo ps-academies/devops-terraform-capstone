@@ -1,12 +1,11 @@
 package settings
 
 import (
-"github.com/spf13/viper"
+	"github.com/spf13/viper"
 )
 
 type IPostgresConfiguration interface {
-	Host() string
-	Port() int
+	Address() string
 	Username() string
 	Password() string
 	DB() string
@@ -14,8 +13,7 @@ type IPostgresConfiguration interface {
 
 const (
 	postgresKey         = "postgres."
-	postgresHostKey     = postgresKey + "host"
-	postgresPortKey     = postgresKey + "port"
+	postgresAddressKey  = postgresKey + "address"
 	postgresUsernameKey = postgresKey + "username"
 	postgresPasswordKey = postgresKey + "password"
 	postgresDBKey       = postgresKey + "db"
@@ -24,20 +22,15 @@ const (
 type PostgresConfiguration struct{}
 
 func NewPostgresConfiguration() *PostgresConfiguration {
-	viper.SetDefault(postgresHostKey, "localhost")
-	viper.SetDefault(postgresPortKey, 5432)
+	viper.SetDefault(postgresAddressKey, "localhost:5432")
 	viper.SetDefault(postgresUsernameKey, "postgres")
 	viper.SetDefault(postgresPasswordKey, "postgres")
 	viper.SetDefault(postgresDBKey, "todos")
 	return &PostgresConfiguration{}
 }
 
-func (rds PostgresConfiguration) Host() string {
-	return viper.GetString(postgresHostKey)
-}
-
-func (rds PostgresConfiguration) Port() int {
-	return viper.GetInt(postgresPortKey)
+func (rds PostgresConfiguration) Address() string {
+	return viper.GetString(postgresAddressKey)
 }
 
 func (rds PostgresConfiguration) Username() string {
@@ -51,4 +44,3 @@ func (rds PostgresConfiguration) Password() string {
 func (rds PostgresConfiguration) DB() string {
 	return viper.GetString(postgresDBKey)
 }
-

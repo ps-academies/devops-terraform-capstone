@@ -45,26 +45,39 @@ jobs:
         run: |
           printf ${{ secrets.BASE64_SSH_PRIVATE_KEY }} | base64 -d > private_key && \
           chmod 0600 private_key
+      - name: Configure deploy .env
+        run: envsubst < .env.template > dist/todo.env
+        working-directory: todo-backend
+        env:
+          APP_BIND_ADDRESS: 0.0.0.0:8080
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          POSTGRES_USERNAME: ${{ secrets.POSTGRES_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DATABASE }}
       - name: Deploy to EC2
         working-directory: todo-backend
         run: |
-          for i in ${{ secrets.EC2_INSTANCE_IPS }}; do \
-            echo "Starting deploy to $i..."; \
-            echo "  Stopping service if running..."; \
-            ssh -i ./private_key -o StrictHostKeyChecking=no ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-active --quiet todo && sudo systemctl stop todo || exit 0'; \
-            echo "  Copying files to instance..."; \
-            scp -i ./private_key dist/* ${{ secrets.EC2_INSTANCE_USER }}@$i:~; \
-            echo "  Moving files into place on instance..."; \
-            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo mv ~/todo /usr/local/bin/todo'; \
-            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo mv ~/todo.service /etc/systemd/system/todo.service'; \
-            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl daemon-reload'; \
+          for i in ${{ secrets.EC2_INSTANCE_IPS }}; do
+            echo "Starting deploy to $i...";
+            echo "  Stopping service if running...";
+            ssh -i ./private_key -o StrictHostKeyChecking=no ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-active --quiet todo && sudo systemctl stop todo || exit 0';
+            echo "  Copying files to instance...";
+            scp -i ./private_key dist/* ${{ secrets.EC2_INSTANCE_USER }}@$i:~/todo/;
+            echo "  Moving files into place on instance...";
+            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i '
+              sudo mkdir -p /opt/todo &&
+              sudo mv ~/todo/* /opt/todo/ &&
+              sudo ln -sf /opt/todo /usr/local/bin/todo &&
+              sudo ln -sf /opt/todo.service /etc/systemd/system/todo.service &&
+              sudo systemctl daemon-reload';
           done
       - name: Start service
         working-directory: todo-backend
         run: |
-          for i in ${{ secrets.EC2_INSTANCE_IPS }}; do \
-            echo "Starting service on $i..."; \
-            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-enabled --quiet todo || sudo systemctl enable todo'; \
-            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl start todo'; \
-            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-active --quiet todo'; \
+          for i in ${{ secrets.EC2_INSTANCE_IPS }}; do
+            echo "Starting service on $i...";
+            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-enabled --quiet todo || sudo systemctl enable todo';
+            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl start todo';
+            ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-active --quiet todo';
           done

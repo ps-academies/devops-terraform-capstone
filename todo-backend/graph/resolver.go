@@ -17,11 +17,10 @@ type Resolver struct {
 
 func NewResolver(cfg *settings.Configuration) (*Resolver, error) {
 	connString := fmt.Sprintf(
-		"postgres://%s:%s@%s:%d/%s",
+		"postgres://%s:%s@%s/%s",
 		cfg.Postgres().Username(),
 		cfg.Postgres().Password(),
-		cfg.Postgres().Host(),
-		cfg.Postgres().Port(),
+		cfg.Postgres().Address(),
 		cfg.Postgres().DB(),
 	)
 
