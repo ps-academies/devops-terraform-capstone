@@ -25,6 +25,7 @@ jobs:
         run: |
           sudo apt-get update &&
           sudo apt-get install --yes postgresql-client
+      - uses: actions/checkout@v2
       - name: Run database migrations
         run: for i in db-init; do echo "Executing script $i..."; bash db-init/$i; done
         working-directory: todo-backend
