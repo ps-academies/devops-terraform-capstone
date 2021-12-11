@@ -50,10 +50,9 @@ jobs:
         working-directory: todo-backend
         env:
           APP_BIND_ADDRESS: 0.0.0.0:8080
-          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
-          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
-          POSTGRES_USERNAME: ${{ secrets.POSTGRES_USERNAME }}
-          POSTGRES_PASSWORD: ${{ secrets.PASSWORD }}
+          POSTGRES_ADDRESS: ${{ secrets.POSTGRES_ADDRESS }}
+          POSTGRES_USERNAME: ${{ secrets.POSTGRES_APP_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_APP_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DATABASE }}
       - name: Deploy to EC2
         working-directory: todo-backend
