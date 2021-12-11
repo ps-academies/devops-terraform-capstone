@@ -62,11 +62,10 @@ jobs:
             echo "  Stopping service if running...";
             ssh -i ./private_key -o StrictHostKeyChecking=no ${{ secrets.EC2_INSTANCE_USER }}@$i 'sudo systemctl is-active --quiet todo && sudo systemctl stop todo || exit 0';
             echo "  Copying files to instance...";
-            scp -i ./private_key dist/* ${{ secrets.EC2_INSTANCE_USER }}@$i:~/todo/;
+            scp -ri ./private_key dist ${{ secrets.EC2_INSTANCE_USER }}@$i:~/todo;
             echo "  Moving files into place on instance...";
             ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i '
-              sudo mkdir -p /opt/todo &&
-              sudo mv ~/todo/* /opt/todo/ &&
+              sudo mv ~/todo /opt/todo/ &&
               sudo ln -sf /opt/todo /usr/local/bin/todo &&
               sudo ln -sf /opt/todo.service /etc/systemd/system/todo.service &&
               sudo systemctl daemon-reload';
