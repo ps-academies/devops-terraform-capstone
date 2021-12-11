@@ -26,7 +26,7 @@ jobs:
           sudo apt-get update &&
           sudo apt-get install --yes postgresql-client
       - name: Run database migrations
-        run: for i in db-init; do echo "Executing script $i..."; bash $i; done
+        run: for i in db-init; do echo "Executing script $i..."; bash db-init/$i; done
         working-directory: todo-backend
         env:
           POSTGRES_ADDRESS: ${{ secrets.POSTGRES_ADDRESS }}
