@@ -67,8 +67,8 @@ jobs:
             ssh -i ./private_key ${{ secrets.EC2_INSTANCE_USER }}@$i '
               sudo rm -rf /opt/todo &&
               sudo mv ~/todo /opt/todo &&
-              sudo ln -sf /opt/todo/todo /usr/local/bin/todo &&
-              sudo ln -sf /opt/todo/todo.service /etc/systemd/system/todo.service &&
+              sudo ln -sfn /opt/todo/todo /usr/local/bin/todo &&
+              sudo ln -sfn /opt/todo/todo.service /etc/systemd/system/todo.service &&
               sudo systemctl daemon-reload';
           done
       - name: Start service
