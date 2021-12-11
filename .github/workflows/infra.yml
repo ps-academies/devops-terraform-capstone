@@ -23,8 +23,8 @@ jobs:
     steps:
       - name: Install PostgreSQL client
         run: |
-          apt-get update &&
-          apt-get install --yes postgresql-client
+          sudo apt-get update &&
+          sudo apt-get install --yes postgresql-client
       - name: Run database migrations
         run: for i in db-init; do echo "Executing script $i..."; bash $i; done
         working-directory: todo-backend
