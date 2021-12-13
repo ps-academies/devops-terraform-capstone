@@ -24,6 +24,7 @@ resource "aws_db_instance" "postgres" {
   db_subnet_group_name                = aws_db_subnet_group.main.name
   delete_automated_backups            = true
   deletion_protection                 = false
+  enabled_cloudwatch_logs_exports     = ["general", "error", "slowquery"]
   engine                              = "postgres"
   engine_version                      = "13.4"
   iam_database_authentication_enabled = true
@@ -32,21 +33,21 @@ resource "aws_db_instance" "postgres" {
   iops                                = 0
   maintenance_window                  = "sun:00:00-sun:01:00" // UTC format of "ddd:hh24:mi-ddd:hh24:mi"
   max_allocated_storage               = 10
-  #monitoring_interval                 = 0
-  #monitoring_role_arn                 = var.monitoring_interval != 0 ? "" : ""
-  name                         = var.project_name
-  multi_az                     = true
-  option_group_name            = "default:postgres-13"
-  parameter_group_name         = "default.postgres13"
-  password                     = random_password.postgres_admin_password.result
-  performance_insights_enabled = true
-  port                         = 5432
-  publicly_accessible          = true
-  skip_final_snapshot          = true
-  snapshot_identifier          = null
-  storage_encrypted            = true
-  storage_type                 = "gp2"
-  username                     = "${var.project_name}_admin"
+  monitoring_interval                 = 5
+  monitoring_role_arn                 = var.monitoring_interval != 0 ? "" : ""
+  name                                = var.project_name
+  multi_az                            = true
+  option_group_name                   = "default:postgres-13"
+  parameter_group_name                = "default.postgres13"
+  password                            = random_password.postgres_admin_password.result
+  performance_insights_enabled        = true
+  port                                = 5432
+  publicly_accessible                 = true
+  skip_final_snapshot                 = true
+  snapshot_identifier                 = null
+  storage_encrypted                   = true
+  storage_type                        = "gp2"
+  username                            = "${var.project_name}_admin"
 
   vpc_security_group_ids = [
     aws_security_group.backend_server.id

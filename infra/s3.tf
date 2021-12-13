@@ -1,9 +1,10 @@
 resource "random_uuid" "random_id" {}
 
 resource "aws_s3_bucket" "frontend" {
+  #checkov:skip=CKV2_AWS_6:Website should be publicly accessible
   #checkov:skip=CKV_AWS_19:Don't encrypt publicly accessible website
   #checkov:skip=CKV_AWS_20:Website should be publicly accessible
-  #checkov:skip=CKV_AWS_21:Don't worry about versioning because website is versioned through git
+  #checkov:skip=CKV_AWS_21:Versioning of websited is handled through git
   #checkov:skip=CKV_AWS_145:Don't encrypt publicly accessible website
   bucket = "${var.project_name}-${random_uuid.random_id.id}"
   acl    = "public-read"
