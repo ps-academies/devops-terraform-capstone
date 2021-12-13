@@ -24,7 +24,6 @@ resource "aws_db_instance" "postgres" {
   db_subnet_group_name                = aws_db_subnet_group.main.name
   delete_automated_backups            = true
   deletion_protection                 = false
-  enabled_cloudwatch_logs_exports     = ["general", "error", "slowquery"]
   engine                              = "postgres"
   engine_version                      = "13.4"
   iam_database_authentication_enabled = true
@@ -33,8 +32,6 @@ resource "aws_db_instance" "postgres" {
   iops                                = 0
   maintenance_window                  = "sun:00:00-sun:01:00" // UTC format of "ddd:hh24:mi-ddd:hh24:mi"
   max_allocated_storage               = 10
-  monitoring_interval                 = 5
-  monitoring_role_arn                 = var.monitoring_interval != 0 ? "" : ""
   name                                = var.project_name
   multi_az                            = true
   option_group_name                   = "default:postgres-13"
