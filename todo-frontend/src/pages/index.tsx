@@ -80,13 +80,15 @@ const IndexRoute: React.FC = () => {
     const { currentPage: prevCurrentPage } = paginationData.pagination;
 
     const nextPagesCount = Math.ceil(count / pageSize);
-    const danglingCurrentPage =
-      pagesCount > 0 && prevCurrentPage > nextPagesCount;
+    const nextCurrentPage =
+      pagesCount > 0 && prevCurrentPage > nextPagesCount
+        ? nextPagesCount
+        : currentPage;
 
     setPagination({
       ...paginationData.pagination,
-      pagesCount: nextPagesCount,
-      ...(danglingCurrentPage && { currentPage: nextPagesCount }),
+      currentPage: nextCurrentPage > 0 ? nextCurrentPage : 1,
+      pagesCount: nextPagesCount > 0 ? nextPagesCount : 1,
     });
   }, [filtered.length, paginationData]);
 
