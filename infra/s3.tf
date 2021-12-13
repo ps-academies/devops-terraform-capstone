@@ -41,6 +41,10 @@ data "aws_iam_policy_document" "frontend" {
 }
 
 resource "aws_s3_bucket_public_access_block" "frontend" {
+  #checkov:skip=CKV_AWS_53:Website should be publicly accessible
+  #checkov:skip=CKV_AWS_54:Website should be publicly accessible
+  #checkov:skip=CKV_AWS_55:Website should be publicly accessible
+  #checkov:skip=CKV_AWS_56:Website should be publicly accessible
   bucket = aws_s3_bucket.frontend.id
 
   block_public_acls   = false
@@ -54,13 +58,28 @@ resource "aws_s3_bucket" "logging" {
   bucket        = "access-logs-${random_uuid.random_id.id}"
   acl           = "private"
   force_destroy = true
+
+  versioning {
+    enabled = true
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = aws_kms_key.project.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "logging" {
   bucket = aws_s3_bucket.logging.id
 
-  block_public_acls   = true
-  block_public_policy = true
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_s3_bucket_policy" "bucket_logging" {
