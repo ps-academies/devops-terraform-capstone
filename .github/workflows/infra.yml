@@ -16,4 +16,5 @@ jobs:
           directory: infra/
           framework: terraform
           soft_fail: true
+          config_file: infra/.checkov.yml
 
