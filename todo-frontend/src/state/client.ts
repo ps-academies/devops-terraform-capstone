@@ -7,7 +7,7 @@ export const client = new ApolloClient({
   cache,
   connectToDevTools: true,
   ...(useRemote() && {
-    uri: process.env.REMOTE_SCHEMA_URL
+    uri: process.env.GATSBY_REMOTE_SCHEMA_URL
   })
 });
 

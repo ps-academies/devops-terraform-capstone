@@ -1,7 +1,7 @@
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
-      REMOTE_SCHEMA_URL?: string
+      GATSBY_REMOTE_SCHEMA_URL?: string
     }
   }
 }

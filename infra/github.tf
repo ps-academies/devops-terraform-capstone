@@ -63,7 +63,7 @@ locals {
       value = base64encode(tls_private_key.ssh.private_key_pem)
     },
     {
-      name  = "REMOTE_SCHEMA_URL"
+      name  = "GATSBY_REMOTE_SCHEMA_URL"
       value = "https://${aws_lb.backend_server.dns_name}/query"
     },
   ]
