@@ -35,6 +35,9 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     environment: production
+    needs:
+      - test
+      - lint
     steps:
       - uses: actions/checkout@v2
       - name: Configure AWS cli
