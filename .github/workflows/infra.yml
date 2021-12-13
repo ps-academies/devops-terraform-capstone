@@ -34,9 +34,8 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Allow connection from GH Actions to RDS
         run: |
-          IP_ADDR=$(curl icanhazip.com) && \
+          IP_ADDR=$(curl icanhazip.com)
           aws ec2 authorize-security-group-ingress --group-id ${{ secrets.SECURITY_GROUP_ID }} --protocol tcp --port 5432 --cidr ${IP_ADDR}/32
-          aws rds modify-db-instance --db-instance-identifier ${{ secrets.RDS_DB_IDENTIFIER }} --publicly-accessible
       - name: Run database migrations
         run: for i in ./db-init/*; do echo "Executing script $i..."; bash $i; done
         working-directory: todo-backend
@@ -46,9 +45,8 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_ADMIN_PASSWORD }}
           POSTGRES_APP_PASSWORD: ${{ secrets.POSTGRES_APP_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DATABASE }}
-      - name: Remove Security group rule to connect Github Actions
+      - name: Revoke connection from GH Actions to RDS
         run: |
           IP_ADDR=$(curl icanhazip.com)
-          aws rds modify-db-instance --db-instance-identifier ${{ secrets.RDS_DB_IDENTIFIER }} --no-publicly-accessible && \
           aws ec2 revoke-security-group-ingress --group-id ${{ secrets.SECURITY_GROUP_ID }} --protocol tcp --port 5432 --cidr ${IP_ADDR}/32
         if:  always()
