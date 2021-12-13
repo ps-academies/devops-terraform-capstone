@@ -14,6 +14,7 @@ resource "random_password" "postgres_app_password" {
 }
 
 resource "aws_db_instance" "postgres" {
+  #checkov:skip=CKV_AWS_17:Create public IP because we don't have access to private GH Actions runners
   apply_immediately                   = true
   allocated_storage                   = 5
   backup_retention_period             = 7

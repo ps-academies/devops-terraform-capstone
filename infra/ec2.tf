@@ -1,4 +1,5 @@
 resource "aws_security_group" "backend_server" {
+  #checkov:skip=CKV_AWS_24:Enable ssh access from all sources since we don't have access to private GH Actions runners
   name        = var.project_name
   description = "Security group for ${var.project_name}"
 
@@ -68,10 +69,13 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_instance" "backend_server" {
+  #checkov:skip=CKV_AWS_88:Allow public IP for ssh access deploy since we don't have access to private GH Actions runners
   count                = length(aws_subnet.main)
   ami                  = data.aws_ami.ubuntu.id
   instance_type        = "t3.nano"
   iam_instance_profile = aws_iam_instance_profile.backend_server.name
+  ebs_optimized        = true
+
 
   key_name = aws_key_pair.ssh_key.key_name
 

@@ -1,6 +1,10 @@
 resource "random_uuid" "random_id" {}
 
 resource "aws_s3_bucket" "frontend" {
+  #checkov:skip=CKV_AWS_19:Don't encrypt publicly accessible website
+  #checkov:skip=CKV_AWS_20:Website should be publicly accessible
+  #checkov:skip=CKV_AWS_21:Don't worry about versioning because website is versioned through git
+  #checkov:skip=CKV_AWS_145:Don't encrypt publicly accessible website
   bucket = "${var.project_name}-${random_uuid.random_id.id}"
   acl    = "public-read"
 
@@ -36,12 +40,27 @@ data "aws_iam_policy_document" "frontend" {
   }
 }
 
+resource "aws_s3_bucket_public_access_block" "frontend" {
+  bucket = aws_s3_bucket.frontend.id
+
+  block_public_acls   = false
+  block_public_policy = false
+}
+
 
 
 resource "aws_s3_bucket" "logging" {
+  #checkov:skip=CKV_AWS_18:This is the logging bucket
   bucket        = "access-logs-${random_uuid.random_id.id}"
   acl           = "private"
   force_destroy = true
+}
+
+resource "aws_s3_bucket_public_access_block" "logging" {
+  bucket = aws_s3_bucket.logging.id
+
+  block_public_acls   = true
+  block_public_policy = true
 }
 
 resource "aws_s3_bucket_policy" "bucket_logging" {
@@ -90,3 +109,4 @@ data "aws_iam_policy_document" "bucket_logging" {
     }
   }
 }
+

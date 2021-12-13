@@ -1,8 +1,10 @@
 resource "aws_lb" "backend_server" {
+  #checkov:skip=CKV_AWS_150:Disable deletion protection since this is a learning project
   name                       = "${var.project_name}-backend-server"
   enable_deletion_protection = false
   internal                   = false
   load_balancer_type         = "application"
+  drop_invalid_header_fields = true
 
   security_groups = [
     aws_security_group.backend_server.id

@@ -44,7 +44,9 @@ data "aws_iam_policy_document" "kms_key" {
     sid     = "Decrypte kms for lambda"
     actions = ["kms:Decrypt", ]
 
-    resources = ["*", ]
+    resources = [
+      "*",
+    ]
 
     principals {
       type        = "AWS"
