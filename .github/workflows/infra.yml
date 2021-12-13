@@ -26,6 +26,10 @@ jobs:
           sudo apt-get update &&
           sudo apt-get install --yes postgresql-client
       - uses: actions/checkout@v2
+      - name: Allow Security group rule to connect Github Actions
+        run: |
+          IP_ADDR=$(curl icanhazip.com) && \
+          aws ec2 authorize-security-group-ingress --group-name ${{ secrets.SG_NAME }} --protocol tcp --port 5432 --cidr ${IP_ADDR}/32
       - name: Run database migrations
         run: for i in ./db-init/*; do echo "Executing script $i..."; bash $i; done
         working-directory: todo-backend
@@ -35,3 +39,8 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_ADMIN_PASSWORD }}
           POSTGRES_APP_PASSWORD: ${{ secrets.POSTGRES_APP_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DATABASE }}
+      - name: Remove Security group rule to connect Github Actions
+        run: |
+          IP_ADDR=$(curl icanhazip.com)
+          aws ec2 revoke-security-group-ingress --group-name ${{ secrets.SG_NAME }} --protocol tcp --port 5432 --cidr ${IP_ADDR}/32
+        if:  always()
