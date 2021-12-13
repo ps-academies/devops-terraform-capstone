@@ -5,7 +5,7 @@ variable "environment" {
 
 variable "region" {
   type    = string
-  default = "us-east-1"
+  default = "us-west-2"
 }
 
 variable "github_token" {
@@ -32,6 +32,11 @@ variable "secret_key" {
 variable "project_name" {
   type    = string
   default = "todo"
+}
+
+variable "aws_ec2_username" {
+  type    = string
+  default = "ec2-user"
 }
 
 variable "aws_tags" {

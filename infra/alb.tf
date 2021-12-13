@@ -1,22 +1,23 @@
-resource "aws_alb" "backend_server" {
+resource "aws_lb" "backend_server" {
   name                       = "${var.project_name}-backend-server"
   enable_deletion_protection = false
   internal                   = false
+  load_balancer_type         = "application"
 
   security_groups = [
     aws_security_group.backend_server.id
   ]
 
-  subnets = aws_subnet.main.*.id
+  subnets = aws_subnet.public.*.id
 
   access_logs {
     bucket  = aws_s3_bucket.logging.id
-    prefix  = var.project_name
+    prefix  = "${var.project_name}-lb-access"
     enabled = true
   }
 }
 
-resource "aws_alb_target_group" "backend_server_8080" {
+resource "aws_lb_target_group" "backend_server_8080" {
   name                 = "${var.project_name}-8080"
   port                 = 8080
   protocol             = "HTTP"
@@ -31,22 +32,39 @@ resource "aws_alb_target_group" "backend_server_8080" {
   }
 }
 
-resource "aws_alb_target_group_attachment" "backend_server_8080" {
+resource "aws_lb_target_group_attachment" "backend_server_8080" {
   count = length(aws_instance.backend_server)
 
-  target_group_arn = aws_alb_target_group.backend_server_8080.arn
+  target_group_arn = aws_lb_target_group.backend_server_8080.arn
   target_id        = aws_instance.backend_server.*.id[count.index]
   port             = 8080
 }
 
-resource "aws_alb_listener" "backend_server_443" {
-  load_balancer_arn = aws_alb.backend_server.arn
+resource "aws_lb_listener" "backend_server_443" {
+  load_balancer_arn = aws_lb.backend_server.arn
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
   certificate_arn   = aws_acm_certificate.example.arn
+
   default_action {
-    target_group_arn = aws_alb_target_group.backend_server_8080.arn
+    target_group_arn = aws_lb_target_group.backend_server_8080.arn
     type             = "forward"
+  }
+}
+
+resource "aws_lb_listener" "backend_server_redirect" {
+  load_balancer_arn = aws_lb.backend_server.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }

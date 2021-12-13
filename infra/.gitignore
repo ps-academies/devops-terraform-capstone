@@ -1,3 +1,6 @@
+ssh_key
+ssh_key.pub
+
 ### Terraform template
 # Local .terraform directories
 **/.terraform/*

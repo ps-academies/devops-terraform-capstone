@@ -3,10 +3,14 @@ resource "aws_db_subnet_group" "main" {
   subnet_ids = aws_subnet.main.*.id
 }
 
-resource "random_password" "postgres_password" {
-  length           = 32
-  special          = true
-  override_special = "!#$%^&*_-"
+resource "random_password" "postgres_admin_password" {
+  length  = 32
+  special = false
+}
+
+resource "random_password" "postgres_app_password" {
+  length  = 32
+  special = false
 }
 
 resource "aws_db_instance" "postgres" {
@@ -33,10 +37,10 @@ resource "aws_db_instance" "postgres" {
   multi_az                     = true
   option_group_name            = "default:postgres-13"
   parameter_group_name         = "default.postgres13"
-  password                     = random_password.postgres_password.result
+  password                     = random_password.postgres_admin_password.result
   performance_insights_enabled = true
   port                         = 5432
-  publicly_accessible          = false
+  publicly_accessible          = true
   skip_final_snapshot          = true
   snapshot_identifier          = null
   storage_encrypted            = true
@@ -50,6 +54,7 @@ resource "aws_db_instance" "postgres" {
   lifecycle {
     ignore_changes = [
       snapshot_identifier,
+      latest_restorable_time,
     ]
   }
 }

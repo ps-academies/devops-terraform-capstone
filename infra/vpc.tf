@@ -23,6 +23,15 @@ resource "aws_subnet" "main" {
   availability_zone = data.aws_availability_zones.available.names[count.index]
 }
 
+resource "aws_subnet" "public" {
+  count  = length(data.aws_availability_zones.available.names)
+  vpc_id = aws_vpc.main.id
+  cidr_block = "10.0.${count.index + length(data.aws_availability_zones.available.names)
+  }.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = true
+}
+
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
@@ -45,7 +54,13 @@ resource "aws_route_table" "main" {
 }
 
 resource "aws_route_table_association" "main_main" {
-  count          = 3
+  count          = length(aws_subnet.main)
   subnet_id      = aws_subnet.main.*.id[count.index]
+  route_table_id = aws_route_table.main.id
+}
+
+resource "aws_route_table_association" "main_public" {
+  count          = length(aws_subnet.public)
+  subnet_id      = aws_subnet.public.*.id[count.index]
   route_table_id = aws_route_table.main.id
 }

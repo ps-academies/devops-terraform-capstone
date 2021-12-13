@@ -6,6 +6,11 @@ resource "aws_s3_bucket" "frontend" {
 
   force_destroy = true
 
+  logging {
+    target_bucket = aws_s3_bucket.logging.id
+    target_prefix = "${var.project_name}-s3-frontend"
+  }
+
   website {
     index_document = "index.html"
     error_document = "404.html"

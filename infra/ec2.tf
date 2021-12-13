@@ -5,11 +5,22 @@ resource "aws_security_group" "backend_server" {
   vpc_id = aws_vpc.main.id
 
   ingress {
+    description = "https"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     description = "http"
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = aws_subnet.main.*.cidr_block
+    cidr_blocks = concat(
+      aws_subnet.main.*.cidr_block,
+      aws_subnet.public.*.cidr_block,
+    )
   }
 
   ingress {
@@ -46,7 +57,6 @@ resource "aws_security_group" "backend_server" {
   }
 }
 
-
 data "aws_ami" "ubuntu" {
   owners      = ["099720109477"] # canonical
   most_recent = true
@@ -60,7 +70,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "backend_server" {
   count                = length(aws_subnet.main)
   ami                  = data.aws_ami.ubuntu.id
-  instance_type        = "t2.micro"
+  instance_type        = "t3.nano"
   iam_instance_profile = aws_iam_instance_profile.backend_server.name
 
   key_name = aws_key_pair.ssh_key.key_name
