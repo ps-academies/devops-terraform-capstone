@@ -7,7 +7,6 @@ RemainAfterExit=yes
 Restart=on-failure
 RestartSec=5s
 ExecStart="todo"
-KillMode=none
 EnvironmentFile=/opt/todo/todo.env
 
 [Install]
