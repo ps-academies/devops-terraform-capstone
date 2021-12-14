@@ -67,8 +67,7 @@ resource "aws_s3_bucket" "logging" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.project.arn
-        sse_algorithm     = "aws:kms"
+        sse_algorithm = "AES256"
       }
     }
   }
@@ -88,23 +87,26 @@ resource "aws_s3_bucket_policy" "bucket_logging" {
   policy = data.aws_iam_policy_document.bucket_logging.json
 }
 
+data "aws_elb_service_account" "main" {}
+
+
 data "aws_iam_policy_document" "bucket_logging" {
   statement {
     actions = ["s3:PutObject"]
     resources = [
-      "arn:aws:s3:::${aws_s3_bucket.logging.bucket}/*/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+      "arn:aws:s3:::${aws_s3_bucket.logging.bucket}/*/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
     ]
 
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${local.elb_account_id[var.region]}:root"]
+      identifiers = [data.aws_elb_service_account.main.arn]
     }
   }
 
   statement {
     actions = ["s3:PutObject"]
     resources = [
-      "arn:aws:s3:::${aws_s3_bucket.logging.bucket}/*/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+      "arn:aws:s3:::${aws_s3_bucket.logging.bucket}/*/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
     ]
 
     principals {
