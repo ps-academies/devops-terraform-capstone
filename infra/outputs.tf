@@ -1,7 +1,3 @@
-output "aws_frontend_bucket_name" {
-  value = aws_s3_bucket.frontend.bucket
-}
-
 output "todo_app_url" {
   value = "http://${aws_s3_bucket.frontend.website_endpoint}"
 }
