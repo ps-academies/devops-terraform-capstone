@@ -36,7 +36,7 @@ variable "project_name" {
 
 variable "aws_ec2_username" {
   type    = string
-  default = "ec2-user"
+  default = "ubuntu"
 }
 
 variable "aws_tags" {
