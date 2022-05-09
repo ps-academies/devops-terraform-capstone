@@ -9,50 +9,21 @@ resource "aws_s3_bucket" "frontend" {
   #checkov:skip=CKV_AWS_20:Website should be publicly accessible
   #checkov:skip=CKV_AWS_21:Versioning of websited is handled through git
   #checkov:skip=CKV_AWS_145:Don't encrypt publicly accessible website
-  bucket = "${var.project_name}-${random_uuid.random_id.id}"
-
-  force_destroy = true
-
 }
 
 resource "aws_s3_bucket_acl" "frontend" {
-  bucket = aws_s3_bucket.frontend.id
-  acl    = "public-read"
 }
 
 resource "aws_s3_bucket_logging" "frontend" {
-  bucket        = aws_s3_bucket.frontend.id
-  target_bucket = aws_s3_bucket.logging.id
-  target_prefix = "${var.project_name}-s3-frontend"
 }
 
 resource "aws_s3_bucket_website_configuration" "frontend" {
-  bucket = aws_s3_bucket.frontend.id
-  index_document {
-    suffix = "index.html"
-  }
-  error_document {
-    key = "404.html"
-  }
 }
 
 resource "aws_s3_bucket_policy" "frontend" {
-  bucket = aws_s3_bucket.frontend.bucket
-  policy = data.aws_iam_policy_document.frontend.json
 }
 
 data "aws_iam_policy_document" "frontend" {
-  statement {
-    sid       = "PublicReadGetObject"
-    actions   = ["s3:GetObject"]
-    resources = ["arn:aws:s3:::${aws_s3_bucket.frontend.bucket}/*"]
-
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-  }
 }
 
 resource "aws_s3_bucket_public_access_block" "frontend" {
@@ -60,10 +31,6 @@ resource "aws_s3_bucket_public_access_block" "frontend" {
   #checkov:skip=CKV_AWS_54:Website should be publicly accessible
   #checkov:skip=CKV_AWS_55:Website should be publicly accessible
   #checkov:skip=CKV_AWS_56:Website should be publicly accessible
-  bucket = aws_s3_bucket.frontend.id
-
-  block_public_acls   = false
-  block_public_policy = false
 }
 
 
