@@ -1,7 +1,7 @@
-# DevOps Academy Capstone
+# DevOps: Terraform Academy Capstone
 
 The goal of this project is to demonstrate your knowledge of DevOps practices by deploying a full application to AWS.
-You will need to create a group of EC2 instances that will run the applications backend services, a RDS postgres instance for the application to store data, and deploy a frontend static site to an s3 bucket.
+You will need to create a group of EC2 instances that will run the applications backend services, an RDS postgres instance for the application to store data, and deploy a frontend static site to an s3 bucket.
 
 
 ## Structure
