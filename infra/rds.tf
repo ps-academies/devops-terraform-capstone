@@ -32,7 +32,7 @@ resource "aws_db_instance" "postgres" {
   iops                                = 0
   maintenance_window                  = "sun:00:00-sun:01:00" // UTC format of "ddd:hh24:mi-ddd:hh24:mi"
   max_allocated_storage               = 10
-  name                                = var.project_name
+  db_name                             = var.project_name
   multi_az                            = true
   option_group_name                   = "default:postgres-13"
   parameter_group_name                = "default.postgres13"

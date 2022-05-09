@@ -83,12 +83,14 @@ resource "github_actions_environment_secret" "capstone_secret" {
 }
 
 resource "github_actions_secret" "capstone_aws_access_key_id" {
+  #checkov:skip=CKV_SECRET_6:Ignore in this project for sake of learning with short-lived generated creds
   repository      = var.github_repo
   secret_name     = "AWS_ACCESS_KEY_ID"
   plaintext_value = var.access_key
 }
 
 resource "github_actions_secret" "capstone_aws_secret_access_key" {
+  #checkov:skip=CKV_SECRET_6:Ignore in this project for sake of learning with short-lived generated creds
   repository      = var.github_repo
   secret_name     = "AWS_SECRET_ACCESS_KEY"
   plaintext_value = var.secret_key
